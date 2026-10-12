@@ -162,15 +162,15 @@ function renderMovementsTable() {
 
      html += `
       <tr>
-        <td class="inventory-tcell">
+        <td class="inventory-tcell" data-label="Date">
           <div>${escapeHtml(date)}</div>
           <small class="text-muted">${escapeHtml(time)}</small>
         </td>
-        <td class="inventory-tcell">${productName}</td>
-        <td class="inventory-tcell"><span class="badge ${typeBadgeClass}">${typeLabel}</span></td>
-        <td class="inventory-tcell text-end ${changeClass} fw-medium">${change}</td>
-        <td class="inventory-tcell text-end">${escapeHtml(m.stock_after)}</td>
-        <td class="reason-column inventory-tcell text-muted small">${reason}</td>
+        <td class="inventory-tcell" data-label="Product">${productName}</td>
+        <td class="inventory-tcell" data-label="Type"><span class="badge ${typeBadgeClass}">${typeLabel}</span></td>
+        <td class="inventory-tcell text-end" data-label="Change"><span class="${changeClass} fw-medium">${change}</span></td>
+        <td class="inventory-tcell text-end" data-label="Stock After">${escapeHtml(m.stock_after)}</td>
+        <td class="reason-column inventory-tcell text-muted small" data-label="Reason">${reason}</td>
       </tr>
     `;
   });
