@@ -10,6 +10,6 @@ const router = express.Router();
 router.use(requireAuth);
 
 // GET /api/inventory/movements - all movements with filters
-router.get("/api/inventory/movements", inventoryController.listMovements);
+router.get("/movements", inventoryController.listMovements);
 
 module.exports = router;

@@ -64,10 +64,10 @@ app.use(sessionMiddleware);
 app.use(csrfOriginCheck);
 
 // API routes.
-app.use(healthRoutes);
-app.use(authRoutes);
-app.use(productRoutes);
-app.use(inventoryRoutes);
+app.use("/api/health", healthRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/inventory", inventoryRoutes);
 
 // Page routes (before static so these URLs stay stable even if
 // files with the same names are added to the static root).

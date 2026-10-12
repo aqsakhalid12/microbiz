@@ -10,22 +10,22 @@ const router = express.Router();
 router.use(requireAuth);
 
 // Fixed routes (categories, low-stock) MUST come before /:id
-router.get("/api/products/categories", productController.listCategories);
-router.get("/api/products/low-stock", productController.listLowStock);
+router.get("/categories", productController.listCategories);
+router.get("/low-stock", productController.listLowStock);
 
 // Main product listing and creation
-router.get("/api/products", productController.listProducts);
-router.post("/api/products", productController.createProduct);
+router.get("/", productController.listProducts);
+router.post("/", productController.createProduct);
 
 // Individual product routes (with :id parameter)
-router.get("/api/products/:id", productController.getProduct);
-router.put("/api/products/:id", productController.updateProduct);
-router.delete("/api/products/:id", productController.deleteProduct);
+router.get("/:id", productController.getProduct);
+router.put("/:id", productController.updateProduct);
+router.delete("/:id", productController.deleteProduct);
 
 // Stock adjustments
-router.post("/api/products/:id/stock-adjustments", productController.adjustStock);
+router.post("/:id/stock-adjustments", productController.adjustStock);
 
 // Product movement history
-router.get("/api/products/:id/movements", productController.getProductMovements);
+router.get("/:id/movements", productController.getProductMovements);
 
 module.exports = router;

@@ -6,6 +6,6 @@ const { healthCheck } = require("../controllers/health.controller");
 const router = express.Router();
 
 // GET /api/health -> liveness/readiness probe
-router.get("/api/health", healthCheck);
+router.get("/", healthCheck);
 
 module.exports = router;
