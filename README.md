@@ -11,7 +11,7 @@ Small business management web application for home-based businesses and independ
 
 ## Project status
 
-Phase 3 complete: Express server, PostgreSQL connection, health endpoint, error handling
+Phase 4 complete: session authentication and data isolation foundation
 
 ## Running the app
 
@@ -20,6 +20,25 @@ Phase 3 complete: Express server, PostgreSQL connection, health endpoint, error 
 3. Production: `npm start`
 4. Health check: [http://localhost:3000/api/health](http://localhost:3000/api/health)
    returns `{ "success": true, "status": "ok", "database": "connected", ... }`
+
+## Authentication
+
+Session-based auth (server-side sessions in PostgreSQL, httpOnly cookie). Endpoints:
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/register` | Create account (validates input, bcrypt-hashes the password) and log in |
+| POST | `/api/auth/login` | Log in (regenerates the session to prevent fixation) |
+| POST | `/api/auth/logout` | Log out (destroys the session and clears the cookie) |
+| GET | `/api/auth/me` | Current user profile; requires login (`401` otherwise) |
+
+Demo login (development only, after `npm run db:seed` and `npm run db:demo-password`):
+
+- Email: `demo@microbiz.test`
+- Password: `Demo@12345`
+
+See `docs/security.md` for the full security design (password rules, session
+settings, rate limiting, CSRF, and the data isolation rule).
 
 ## Folder structure
 
