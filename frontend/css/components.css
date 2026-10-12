@@ -7,16 +7,69 @@
 /* ==== Stat card ==== */
 .stat-card {
   background-color: #fff;
-  border-radius: var(--radius);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  padding: 1rem;
+  padding: 1rem 1.25rem;
   height: 100%; /* for equal height in flex/grid */
   display: flex;
   flex-direction: column;
 }
+
+/* Stat grid: equal-height cards, 1 col <400px, 2 cols mobile/tablet,
+   3 cols from 768px (and through 1399px), 6 cols only from 1400px */
+#stat-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  align-items: stretch;
+  margin-bottom: 0 !important; /* spacing is owned by the panels below */
+}
+#stat-cards.row {
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+  --bs-gutter-x: 0;
+  --bs-gutter-y: 0;
+}
+/* Neutralise the Bootstrap column wrappers injected by dashboard.js so the
+   grid (not .col-6/.col-md-4) controls the track count. */
+#stat-cards > [class*="col-"] {
+  width: 100%;
+  max-width: none;
+  margin-top: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+@media (min-width: 400px) {
+  #stat-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 768px) {
+  #stat-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1400px) {
+  #stat-cards {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+/* Card padding lives on .stat-card, so drop the inner .card-body padding */
+.stat-card .card-body {
+  padding: 0;
+  flex: 1;
+}
+
+/* Let the text column shrink so the icon stays put and the hint ellipsizes */
+.stat-card .card-body > .d-flex > div:first-child {
+  min-width: 0;
+}
+
 .stat-card .stat-icon {
-  font-size: 2rem;
-  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
   width: 2.5rem;
   height: 2.5rem;
   flex-shrink: 0;
@@ -28,7 +81,7 @@
   color: var(--primary);
 }
 .stat-card .stat-label {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -45,6 +98,9 @@
 .stat-card .stat-hint {
   font-size: 0.75rem;
   color: var(--gray-500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ==== Page header ==== */
@@ -75,6 +131,44 @@
   font-size: 0.875rem;
   color: var(--gray-500);
   margin-top: 0.25rem;
+}
+
+/* ==== Panels (Sales overview, Low-stock alerts) ==== */
+/* Stacked on mobile, side by side from the lg breakpoint, 1.5rem gap */
+.panel-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+@media (min-width: 992px) {
+  .panel-row {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}
+
+/* Panel card — matches the stat card border/shadow, 12px corners */
+.panel-card {
+  background-color: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.panel-card .card-header {
+  background-color: #fff;
+  border-bottom: 1px solid var(--gray-200);
+}
+.panel-card .card-body {
+  flex: 1;
+}
+/* Keep placeholder empty states compact inside the panels */
+.panel-card .empty-state {
+  padding: 2rem 1rem;
+}
+.panel-card .empty-state .empty-state-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
 }
 
 /* ==== Status badges ==== */

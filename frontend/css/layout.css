@@ -18,13 +18,32 @@
     overflow-y: auto; /* scroll if content overflows */
     z-index: 1030; /* above navbar, below modal */
   }
+}
 
+/* ==== Main content region ==== */
+.app-main {
+  min-height: 100vh;
+}
+@media (min-width: 992px) {
   .app-main {
-    min-height: 100vh;
     margin-left: 260px; /* offset for fixed sidebar */
-    padding-right: var(--spacing-md);
-    padding-left: var(--spacing-md);
-    padding-top: var(--spacing-lg);
+  }
+}
+
+/* Inner page content: capped at 1400px, centred, padded on all sides */
+.app-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0.75rem; /* mobile */
+}
+@media (min-width: 768px) {
+  .app-content {
+    padding: 1rem; /* tablet */
+  }
+}
+@media (min-width: 992px) {
+  .app-content {
+    padding: 1.5rem; /* desktop */
   }
 }
 
@@ -92,6 +111,10 @@
 }
 
 /* ==== Top bar (sticky) ==== */
+/* Full width of the content area, no floating gap, subtle bottom border.
+   The sidebar injects Bootstrap's .px-3 / .p-0 utilities on the bar, so the
+   padding is reset here (!important to beat those utilities) and re-applied
+   on the inner container to match the page content padding. */
 .app-topbar {
   position: sticky;
   top: 0;
@@ -99,13 +122,27 @@
   background-color: #fff;
   border-bottom: 1px solid var(--gray-200);
   min-height: 3.5rem; /* 56px */
+  padding: 0 !important;
 }
 
-/* Top bar content */
+/* Top bar content — aligns with the 1400px page content width */
 .app-topbar .container-fluid {
-  height: 100%;
+  min-height: 3.5rem; /* keeps the bar height, since .app-topbar height is auto */
   display: flex;
   align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 0.75rem !important; /* mobile */
+}
+@media (min-width: 768px) {
+  .app-topbar .container-fluid {
+    padding: 0 1rem !important; /* tablet */
+  }
+}
+@media (min-width: 992px) {
+  .app-topbar .container-fluid {
+    padding: 0 1.5rem !important; /* desktop */
+  }
 }
 
 /* Hamburger button (mobile only) */
