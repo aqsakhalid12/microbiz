@@ -13,6 +13,8 @@ const healthRoutes = require("./routes/health.routes");
 const authRoutes = require("./routes/auth.routes");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
+// Directory for HTML page files (served via custom routes).
+const PAGES_DIR = path.join(__dirname, "..", "..", "frontend", "pages");
 
 const app = express();
 
@@ -24,7 +26,25 @@ if (NODE_ENV === "production") {
 }
 
 // Security: set sensible HTTP headers (XSS protection, HSTS, etc.).
-app.use(helmet());
+// The Content-Security-Policy is customized so the Bootstrap /
+// Bootstrap Icons CDN (cdn.jsdelivr.net) works:
+//   - scripts and fonts may load from that CDN
+//   - styles may load from that CDN, and 'unsafe-inline' is allowed
+//     for style-src ONLY (Bootstrap's JS sets inline styles)
+//   - inline <script> blocks are NOT allowed (all our JS is external)
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+        fontSrc: ["'self'", "https://cdn.jsdelivr.net"],
+        imgSrc: ["'self'", "data:", "https:"],
+      },
+    },
+  })
+);
 
 // Logging: "dev" format gives short colored logs for each request.
 app.use(morgan("dev"));
@@ -43,14 +63,23 @@ app.use(csrfOriginCheck);
 app.use(healthRoutes);
 app.use(authRoutes);
 
+// Page routes (before static so these URLs stay stable even if
+// files with the same names are added to the static root).
+app.get("/", (req, res) => res.redirect("/dashboard"));
+
+app.get(["/login", "/register"], (req, res) => {
+  if (req.session.userId) return res.redirect("/dashboard");
+  res.sendFile(path.join(PAGES_DIR, req.path === "/login" ? "login.html" : "register.html"));
+});
+
+app.get("/dashboard", (req, res) => {
+  if (!req.session.userId) return res.redirect("/login");
+  res.sendFile(path.join(PAGES_DIR, "dashboard.html"));
+});
+
 // Serve static files (CSS/JS/images/HTML) from the "frontend" folder.
 // __dirname is backend/src, so two levels up is the project root.
 app.use(express.static(path.join(__dirname, "..", "..", "frontend")));
-
-// The root URL serves the placeholder page.
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "..", "frontend", "pages", "index.html"));
-});
 
 // Everything that matched nothing above gets a JSON 404.
 app.use(notFound);

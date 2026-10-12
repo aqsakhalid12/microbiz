@@ -23,4 +23,4 @@ dist/
 uploads/
 
 # Database backups
-*.sql.bak
+*.sql.bakcookie*.txt

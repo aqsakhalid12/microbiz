@@ -11,7 +11,18 @@ Small business management web application for home-based businesses and independ
 
 ## Project status
 
-Phase 4 complete: session authentication and data isolation foundation
+Phase 5 complete: frontend layout and design system
+
+## Pages & routes
+
+| Route | Page | Access |
+|-------|------|--------|
+| `GET /` | redirects to `/dashboard` | everyone |
+| `GET /login` | login.html | guests (redirects to `/dashboard` if logged in) |
+| `GET /register` | register.html | guests |
+| `GET /dashboard` | dashboard.html | logged-in users |
+
+The design system includes CSS variables, base styles, layout (sidebar/topbar), and components (stat cards, badges, empty states, skeletons, tables, forms, toasts). All UI is built with HTML5, CSS3, and vanilla JavaScript using Bootstrap 5.3 (CDN) and Bootstrap Icons (CDN).
 
 ## Running the app
 

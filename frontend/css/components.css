@@ -1,0 +1,242 @@
+/* frontend/css/components.css
+   Reusable component styles used across pages.
+   Includes stat cards, page headers, badges, empty states,
+   skeleton loaders, tables, forms, and toasts.
+*/
+
+/* ==== Stat card ==== */
+.stat-card {
+  background-color: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
+  height: 100%; /* for equal height in flex/grid */
+  display: flex;
+  flex-direction: column;
+}
+.stat-card .stat-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-light);
+  border-radius: var(--radius);
+  color: var(--primary);
+}
+.stat-card .stat-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gray-500);
+  margin-bottom: 0.5rem;
+}
+.stat-card .stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--gray-900);
+  line-height: 1.2;
+}
+.stat-card .stat-hint {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+}
+
+/* ==== Page header ==== */
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.page-header .page-header-icon {
+  font-size: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-light);
+  border-radius: var(--radius);
+  color: var(--primary);
+}
+.page-header .page-header-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 0;
+}
+.page-header .page-header-subtitle {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  margin-top: 0.25rem;
+}
+
+/* ==== Status badges ==== */
+/* Order status */
+.badge-status-pending { background-color: var(--gray-500); color: #fff; }
+.badge-status-confirmed { background-color: #0284c7; color: #fff; }   /* info/sky */
+.badge-status-processing { background-color: var(--warning); color: #fff; }
+.badge-status-completed { background-color: var(--success); color: #fff; }
+.badge-status-cancelled { background-color: var(--danger); color: #fff; }
+
+/* Payment status */
+.badge-payment-unpaid { background-color: var(--danger); color: #fff; }
+.badge-payment-partially-paid { background-color: var(--warning); color: #fff; }
+.badge-payment-paid { background-color: var(--success); color: #fff; }
+
+/* Stock indicator */
+.badge-stock-in { background-color: var(--success); color: #fff; }
+.badge-stock-low { background-color: var(--warning); color: #fff; }
+.badge-stock-out { background-color: var(--danger); color: #fff; }
+
+/* Make badges a bit larger */
+.badge {
+  font-size: 0.75rem;
+  padding: 0.35em 0.6em;
+  border-radius: var(--radius-sm);
+}
+
+/* ==== Empty state ==== */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--gray-500);
+}
+.empty-state .empty-state-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  color: var(--gray-300);
+}
+.empty-state .empty-state-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--gray-700);
+}
+.empty-state .empty-state-text {
+  font-size: 1rem;
+  margin-bottom: 0;
+  line-height: 1.4;
+}
+
+/* ==== Skeleton loader ==== */
+/* Simple pulsing placeholder */
+@keyframes skeleton-pulse {
+  0% { background-color: var(--gray-200); }
+  50% { background-color: var(--gray-300); }
+  100% { background-color: var(--gray-200); }
+}
+.skeleton-line {
+  height: 1rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--gray-200);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+.skeleton-line.wide { width: 100%; }
+.skeleton-line.short { width: 60%; }
+.skeleton-line.medium { width: 80%; }
+
+/* ==== Table styling ==== */
+.table-styled {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 1rem;
+  background-color: transparent;
+}
+.table-styled th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--gray-600);
+  background-color: var(--gray-50);
+  border-bottom: 2px solid var(--gray-200);
+}
+.table-styled td {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  border-top: 1px solid var(--gray-200);
+}
+.table-styled tbody tr:nth-of-type(odd) {
+  background-color: var(--gray-50);
+}
+.table-styled tbody tr:hover {
+  background-color: var(--gray-100);
+}
+
+/* ==== Form styling ==== */
+.form-label {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+.form-control,
+.form-select {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--gray-900);
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--primary);
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.25);
+}
+.form-control.plaintext,
+.form-select.plaintext {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0;
+  line-height: 1.5;
+  color: var(--gray-700);
+  background-color: var(--gray-50);
+  border: solid transparent;
+  border-width: 1px 0;
+}
+.form-control[readonly], 
+.form-select[readonly] {
+  background-color: var(--gray-50);
+  opacity: 0.8;
+}
+
+/* Feedback for invalid fields */
+.is-invalid {
+  border-color: var(--danger) !important;
+}
+.invalid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--danger);
+}
+
+/* ==== Toast container ==== */
+/* Positioned at bottom-right; toasts themselves use Bootstrap classes */
+#toast-container {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 1060; /* above most things */
+  pointer-events: none; /* let clicks pass through to underlying elements */
+}
+#toast-container .toast {
+  pointer-events: all;
+  min-width: 200px;
+  max-width: 350px;
+}

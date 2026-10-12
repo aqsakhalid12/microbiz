@@ -1,0 +1,166 @@
+/* frontend/css/layout.css
+   Layout styles for the application shell.
+   Defines the fixed sidebar (desktop), offcanvas sidebar (mobile),
+   and sticky top bar with business name and user dropdown.
+*/
+
+/* ==== Sidebar (desktop) ==== */
+@media (min-width: 992px) {
+  .app-sidebar-desktop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 260px;
+    padding: 1.5rem 1rem;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    overflow-y: auto; /* scroll if content overflows */
+    z-index: 1030; /* above navbar, below modal */
+  }
+
+  .app-main {
+    min-height: 100vh;
+    margin-left: 260px; /* offset for fixed sidebar */
+    padding-right: var(--spacing-md);
+    padding-left: var(--spacing-md);
+    padding-top: var(--spacing-lg);
+  }
+}
+
+/* Sidebar brand */
+.app-sidebar-desktop .sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+  margin-bottom: 2rem;
+}
+
+/* Sidebar navigation link */
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  color: var(--sidebar-text);
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+.sidebar-link:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+.sidebar-link.active {
+  background-color: var(--sidebar-active-bg);
+  color: #fff;
+}
+.sidebar-link.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Sidebar icon size */
+.sidebar-link i {
+  font-size: 1.25rem;
+  min-width: 1.5rem; /* for alignment */
+}
+
+/* ==== Offcanvas sidebar (mobile) ==== */
+/* The offcanvas itself gets the sidebar background */
+.app-offcanvas {
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
+}
+
+/* Offcanvas header */
+.app-offcanvas .offcanvas-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+}
+.app-offcanvas .offcanvas-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+/* Offcanvas body nav links - reuse .sidebar-link styles */
+.app-offcanvas .sidebar-link {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.25rem;
+}
+
+/* ==== Top bar (sticky) ==== */
+.app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1030; /* above sidebar, below modal */
+  background-color: #fff;
+  border-bottom: 1px solid var(--gray-200);
+  min-height: 3.5rem; /* 56px */
+}
+
+/* Top bar content */
+.app-topbar .container-fluid {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* Hamburger button (mobile only) */
+.app-topbar .btn-outline-secondary {
+  color: var(--gray-500);
+  border-color: var(--gray-500);
+}
+.app-topbar .btn-outline-secondary:hover {
+  background-color: var(--gray-100);
+}
+
+/* Business name in top bar */
+#topbar-business {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 0 auto 0 1rem; /* center, with space for hamburger on left */
+}
+
+/* User dropdown in top bar */
+.app-topbar .dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--gray-700);
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+.app-topbar .dropdown-toggle i {
+  font-size: 1.25rem;
+}
+.app-topbar .dropdown-menu {
+  min-width: 10rem;
+  padding: 0.5rem 0;
+}
+.app-topbar .dropdown-header {
+  padding: 0.5rem 1rem;
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+.app-topbar .dropdown-divider {
+  height: 1px;
+  margin: 0.5rem 0;
+  background-color: var(--gray-200);
+}
+.app-topbar .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: var(--gray-800);
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+.app-topbar .dropdown-item:hover {
+  background-color: var(--gray-100);
+}
