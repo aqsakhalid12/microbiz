@@ -2,6 +2,10 @@
 -- Development seed data for MicroBiz
 -- Safe to re-run: checks for existing demo user and skips if present.
 -- Run after migrations: npm run db:seed
+--
+-- INVARIANT: For every product, products.stock_quantity ==
+--   SUM(inventory_movements.quantity_change) for that product, and each
+--   movement's stock_after equals the running balance (ordered by id).
 -- ============================================================================
 
 -- Demo user credentials
@@ -28,7 +32,6 @@ DECLARE
     v_order_id BIGINT;
     v_subtotal NUMERIC;
     v_total NUMERIC;
-    v_prod RECORD;
 BEGIN
     -- Check if demo user already exists
     SELECT id INTO v_user_id FROM users WHERE email = 'demo@microbiz.test';
@@ -50,6 +53,11 @@ BEGIN
     VALUES (v_user_id, 'MicroBiz Demo Store', 'demo@microbiz.test', '+1-555-0100', '123 Main St, Springfield, IL 62701', 'USD', 5);
 
     -- 3. Products (8 products across 3 categories)
+    -- Stock quantities are chosen so the final values after all movements
+    -- keep 3 products in low-stock territory:
+    --   USB-C Hub 7-in-1  -> final stock 3 (<= threshold 5)
+    --   Slim Fit Jeans    -> final stock 2 (<= threshold 5)
+    --   LED Desk Lamp     -> final stock 1 (<= threshold 2)
     -- Electronics
     INSERT INTO products (user_id, name, sku, description, category, selling_price, cost_price, stock_quantity, low_stock_threshold, image_url)
     VALUES (v_user_id, 'Wireless Headphones', 'ELEC-WH-001', 'Bluetooth over-ear headphones with noise cancellation', 'Electronics', 129.99, 65.00, 8, 5, NULL)
@@ -85,7 +93,31 @@ BEGIN
     VALUES (v_user_id, 'LED Desk Lamp', 'HOME-DL-002', 'Adjustable LED desk lamp with touch dimmer', 'Home & Garden', 39.99, 16.00, 1, 2, NULL)
     RETURNING id, selling_price, cost_price INTO v_prod_dl_id, v_prod_dl_price, v_prod_dl_cost;
 
-    -- 4. Customers (4 customers)
+    -- 4. Initial stock movements for all products.
+    -- initial_stock = final stock_quantity + total future sales (so the sum
+    -- of all movements for each product equals stock_quantity).
+    -- Movements are inserted in order so stock_after = running balance.
+    --   WH: 8 + 1  = 9 initial  (after sale: 8)
+    --   USB: 3 + 2 = 5 initial  (after sale: 3)
+    --   MK: 12 + 1 = 13 initial  (after sale: 12)
+    --   TS: 25 + 3 = 28 initial  (after sale: 25)
+    --   JN: 2 + 1  = 3 initial   (after sale: 2)
+    --   HD: 15 + 2 = 17 initial  (after sale: 15)
+    --   CP: 10 + 2 = 12 initial  (after sale: 10)
+    --   DL: 1 + 1  = 2 initial   (after sale: 1, after restore: 2... but final stock=1)
+    --   For DL the sale (-1) and restore (+1) cancel out, so initial_stock = 1.
+    INSERT INTO inventory_movements (user_id, product_id, order_id, movement_type, quantity_change, stock_after, reason)
+    VALUES
+        (v_user_id, v_prod_wh_id, NULL, 'initial_stock', 9, 9, 'Initial stock on product creation'),
+        (v_user_id, v_prod_usb_id, NULL, 'initial_stock', 5, 5, 'Initial stock on product creation'),
+        (v_user_id, v_prod_mk_id, NULL, 'initial_stock', 13, 13, 'Initial stock on product creation'),
+        (v_user_id, v_prod_ts_id, NULL, 'initial_stock', 28, 28, 'Initial stock on product creation'),
+        (v_user_id, v_prod_jn_id, NULL, 'initial_stock', 3, 3, 'Initial stock on product creation'),
+        (v_user_id, v_prod_hd_id, NULL, 'initial_stock', 17, 17, 'Initial stock on product creation'),
+        (v_user_id, v_prod_cp_id, NULL, 'initial_stock', 12, 12, 'Initial stock on product creation'),
+        (v_user_id, v_prod_dl_id, NULL, 'initial_stock', 1, 1, 'Initial stock on product creation');
+
+    -- 5. Customers (4 customers)
     INSERT INTO customers (user_id, name, email, phone, address, notes)
     VALUES (v_user_id, 'Alice Johnson', 'alice@example.com', '+1-555-0101', '10 Oak Ave, Springfield, IL 62701', 'Prefers email communication')
     RETURNING id INTO v_cust_alice_id;
@@ -102,7 +134,7 @@ BEGIN
     VALUES (v_user_id, 'David Brown', 'david@example.com', '+1-555-0104', '18 Elm St, Springfield, IL 62704', 'Walk-in mostly')
     RETURNING id INTO v_cust_david_id;
 
-    -- 5. Expenses (6 expenses)
+    -- 6. Expenses (6 expenses)
     INSERT INTO expenses (user_id, category, description, amount, expense_date, notes)
     VALUES
         (v_user_id, 'Rent', 'Monthly shop rent', 1200.00, '2024-01-01', 'January rent'),
@@ -112,7 +144,8 @@ BEGIN
         (v_user_id, 'Software', 'Accounting software subscription', 29.99, '2024-01-15', 'Monthly'),
         (v_user_id, 'Shipping', 'Postage for orders', 120.00, '2024-01-20', 'Bulk shipping labels');
 
-    -- 6. Orders with order_items and inventory_movements (5 orders)
+    -- 7. Orders with order_items and inventory_movements (5 orders)
+    --    Sale movements include stock_after as the running balance after the sale.
 
     -- Order 1: Alice - Confirmed, Partially Paid
     -- Items: Wireless Headphones (1), USB-C Hub (2)
@@ -130,8 +163,8 @@ BEGIN
 
     INSERT INTO inventory_movements (user_id, product_id, order_id, movement_type, quantity_change, stock_after, reason)
     VALUES
-        (v_user_id, v_prod_wh_id, v_order_id, 'sale', -1, (SELECT stock_quantity FROM products WHERE id = v_prod_wh_id), 'Order ORD-2024-001'),
-        (v_user_id, v_prod_usb_id, v_order_id, 'sale', -2, (SELECT stock_quantity FROM products WHERE id = v_prod_usb_id), 'Order ORD-2024-001');
+        (v_user_id, v_prod_wh_id, v_order_id, 'sale', -1, 8, 'Order ORD-2024-001'),
+        (v_user_id, v_prod_usb_id, v_order_id, 'sale', -2, 3, 'Order ORD-2024-001');
 
     -- Order 2: Bob - Completed, Paid
     -- Items: Mechanical Keyboard (1), Organic Cotton T-Shirt (3)
@@ -149,11 +182,13 @@ BEGIN
 
     INSERT INTO inventory_movements (user_id, product_id, order_id, movement_type, quantity_change, stock_after, reason)
     VALUES
-        (v_user_id, v_prod_mk_id, v_order_id, 'sale', -1, (SELECT stock_quantity FROM products WHERE id = v_prod_mk_id), 'Order ORD-2024-002'),
-        (v_user_id, v_prod_ts_id, v_order_id, 'sale', -3, (SELECT stock_quantity FROM products WHERE id = v_prod_ts_id), 'Order ORD-2024-002');
+        (v_user_id, v_prod_mk_id, v_order_id, 'sale', -1, 12, 'Order ORD-2024-002'),
+        (v_user_id, v_prod_ts_id, v_order_id, 'sale', -3, 25, 'Order ORD-2024-002');
 
     -- Order 3: Carol (VIP) - Processing, Unpaid
     -- Items: Slim Fit Jeans (1), Hooded Sweatshirt (2)
+    -- JN: initial_stock=3, sale=-1 → stock_after=2 (matches stock_quantity=2)
+    -- HD: initial_stock=17, sale=-2 → stock_after=15 (matches stock_quantity=15)
     v_subtotal := (v_prod_jn_price * 1) + (v_prod_hd_price * 2);
     v_total := v_subtotal * 0.90;
 
@@ -166,8 +201,16 @@ BEGIN
         (v_order_id, v_prod_jn_id, 'Slim Fit Jeans', 'CLTH-JN-002', 1, v_prod_jn_price, v_prod_jn_cost, v_prod_jn_price * 1),
         (v_order_id, v_prod_hd_id, 'Hooded Sweatshirt', 'CLTH-HD-003', 2, v_prod_hd_price, v_prod_hd_cost, v_prod_hd_price * 2);
 
+    -- Order 3: sale movements recorded (stock_deducted=FALSE means orders module
+    --   hasn't processed the deduction yet, but movements track the audit trail)
+    INSERT INTO inventory_movements (user_id, product_id, order_id, movement_type, quantity_change, stock_after, reason)
+    VALUES
+        (v_user_id, v_prod_jn_id, v_order_id, 'sale', -1, 2, 'Order ORD-2024-003'),
+        (v_user_id, v_prod_hd_id, v_order_id, 'sale', -2, 15, 'Order ORD-2024-003');
+
     -- Order 4: Walk-in (no customer) - Pending, Unpaid
     -- Items: Ceramic Planter Set (2)
+    -- CP: initial_stock=12, sale=-2 → stock_after=10 (matches stock_quantity=10)
     v_subtotal := v_prod_cp_price * 2;
     v_total := v_subtotal;
 
@@ -178,14 +221,20 @@ BEGIN
     INSERT INTO order_items (order_id, product_id, product_name, sku, quantity, unit_price, unit_cost, line_total)
     VALUES (v_order_id, v_prod_cp_id, 'Ceramic Planter Set', 'HOME-CP-001', 2, v_prod_cp_price, v_prod_cp_cost, v_prod_cp_price * 2);
 
+    -- Order 4: sale movement recorded
+    INSERT INTO inventory_movements (user_id, product_id, order_id, movement_type, quantity_change, stock_after, reason)
+    VALUES (v_user_id, v_prod_cp_id, v_order_id, 'sale', -2, 10, 'Order ORD-2024-004');
+
     -- Order 5: David - Cancelled, Unpaid (stock was deducted then restored)
     -- Items: LED Desk Lamp (1)
+    -- DL: initial_stock=1, sale=-1 (stock_after=0), restore=+1 (stock_after=1)
+    -- final stock = 1 ✓
     v_subtotal := v_prod_dl_price * 1;
     v_total := v_subtotal;
 
-    -- First, stock was deducted (simulate sale)
+    -- First, stock was deducted (sale movement, stock_after=0)
     INSERT INTO inventory_movements (user_id, product_id, order_id, movement_type, quantity_change, stock_after, reason)
-    VALUES (v_user_id, v_prod_dl_id, NULL, 'sale', -1, (SELECT stock_quantity FROM products WHERE id = v_prod_dl_id) - 1, 'Order ORD-2024-005 (deducted)');
+    VALUES (v_user_id, v_prod_dl_id, NULL, 'sale', -1, 0, 'Order ORD-2024-005 (deducted)');
 
     -- Then order created as cancelled with stock_deducted = TRUE
     INSERT INTO orders (user_id, customer_id, order_number, status, payment_status, subtotal, discount, total, amount_paid, stock_deducted, completed_at)
@@ -195,17 +244,14 @@ BEGIN
     INSERT INTO order_items (order_id, product_id, product_name, sku, quantity, unit_price, unit_cost, line_total)
     VALUES (v_order_id, v_prod_dl_id, 'LED Desk Lamp', 'HOME-DL-002', 1, v_prod_dl_price, v_prod_dl_cost, v_prod_dl_price * 1);
 
-    -- Cancellation restore movement
-    INSERT INTO inventory_movements (user_id, product_id, order_id, movement_type, quantity_change, stock_after, reason)
-    VALUES (v_user_id, v_prod_dl_id, v_order_id, 'cancellation_restore', 1, (SELECT stock_quantity FROM products WHERE id = v_prod_dl_id), 'Order ORD-2024-005 cancelled');
+    -- Update the sale movement to link it to the order
+    UPDATE inventory_movements
+    SET order_id = v_order_id
+    WHERE product_id = v_prod_dl_id AND movement_type = 'sale' AND reason = 'Order ORD-2024-005 (deducted)';
 
-    -- 7. Initial stock movements for all products (audit trail)
-    FOR v_prod IN SELECT id, stock_quantity FROM products WHERE user_id = v_user_id LOOP
-        IF v_prod.stock_quantity > 0 THEN
-            INSERT INTO inventory_movements (user_id, product_id, order_id, movement_type, quantity_change, stock_after, reason)
-            VALUES (v_user_id, v_prod.id, NULL, 'initial_stock', v_prod.stock_quantity, v_prod.stock_quantity, 'Initial stock on product creation');
-        END IF;
-    END LOOP;
+    -- Cancellation restore movement (restore stock for cancelled order)
+    INSERT INTO inventory_movements (user_id, product_id, order_id, movement_type, quantity_change, stock_after, reason)
+    VALUES (v_user_id, v_prod_dl_id, v_order_id, 'cancellation_restore', 1, 1, 'Order ORD-2024-005 cancelled');
 
     RAISE NOTICE 'Seed data inserted successfully for user_id=%', v_user_id;
 END $$;
