@@ -11,7 +11,15 @@ Small business management web application for home-based businesses and independ
 
 ## Project status
 
-Phase 2 complete: database schema, migrations, and seed data
+Phase 3 complete: Express server, PostgreSQL connection, health endpoint, error handling
+
+## Running the app
+
+1. Make sure PostgreSQL is running and `.env` contains a valid `DATABASE_URL`
+2. Development (auto-restart on changes): `npm run dev`
+3. Production: `npm start`
+4. Health check: [http://localhost:3000/api/health](http://localhost:3000/api/health)
+   returns `{ "success": true, "status": "ok", "database": "connected", ... }`
 
 ## Folder structure
 
