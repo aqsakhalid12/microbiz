@@ -9,7 +9,7 @@
   background-color: #fff;
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
-  padding: 1.5rem;
+  padding: 1rem;
   height: 100%; /* for equal height in flex/grid */
   display: flex;
   flex-direction: column;
@@ -19,6 +19,7 @@
   margin-bottom: 0.75rem;
   width: 2.5rem;
   height: 2.5rem;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;

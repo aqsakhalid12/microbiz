@@ -40,10 +40,12 @@ app.use(
         scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
         fontSrc: ["'self'", "https://cdn.jsdelivr.net"],
+        connectSrc: ["'self'", "https://cdn.jsdelivr.net"],
         imgSrc: ["'self'", "data:", "https:"],
+        
       },
     },
-  })
+  }),
 );
 
 // Logging: "dev" format gives short colored logs for each request.
@@ -69,7 +71,12 @@ app.get("/", (req, res) => res.redirect("/dashboard"));
 
 app.get(["/login", "/register"], (req, res) => {
   if (req.session.userId) return res.redirect("/dashboard");
-  res.sendFile(path.join(PAGES_DIR, req.path === "/login" ? "login.html" : "register.html"));
+  res.sendFile(
+    path.join(
+      PAGES_DIR,
+      req.path === "/login" ? "login.html" : "register.html",
+    ),
+  );
 });
 
 app.get("/dashboard", (req, res) => {
