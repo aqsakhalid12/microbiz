@@ -4,7 +4,14 @@
   "description": "Small business management web application for home-based businesses and independent sellers",
   "main": "backend/src/server.js",
   "scripts": {
-    "test": "echo \"No tests yet\" && exit 0"
+    "test": "echo \"No tests yet\" && exit 0",
+    "db:migrate": "node database/scripts/migrate.js",
+    "db:seed": "node database/scripts/seed.js",
+    "db:reset": "node database/scripts/migrate.js --reset"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^18.0.7",
+    "pg": "^8.23.1"
+  }
 }

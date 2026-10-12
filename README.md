@@ -11,7 +11,7 @@ Small business management web application for home-based businesses and independ
 
 ## Project status
 
-Phase 1 complete: project foundation
+Phase 2 complete: database schema, migrations, and seed data
 
 ## Folder structure
 
@@ -46,7 +46,13 @@ microbiz/
 
 ## Getting started
 
-Setup instructions will be added as phases are completed.
+### Database setup
+
+1. Create a PostgreSQL database named `microbiz` (e.g., using pgAdmin or `createdb microbiz`)
+2. Copy `.env.example` to `.env` and update `DATABASE_URL` with your credentials
+3. Run migrations: `npm run db:migrate`
+4. Seed development data: `npm run db:seed`
+5. To reset the database (development only): `npm run db:reset`
 
 ## Planned phases
 
