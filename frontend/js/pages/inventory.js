@@ -136,7 +136,7 @@ function renderMovementsTable() {
 
   let html = `
     <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
+      <table class="table table-hover align-middle mb-0 inventory-table">
         <thead class="table-light">
           <tr>
             <th scope="col">Date</th>
@@ -144,7 +144,7 @@ function renderMovementsTable() {
             <th scope="col">Type</th>
             <th scope="col" class="text-end">Change</th>
             <th scope="col" class="text-end">Stock After</th>
-            <th scope="col">Reason</th>
+            <th scope="col" class="reason-column">Reason</th>
           </tr>
         </thead>
         <tbody>
@@ -158,19 +158,19 @@ function renderMovementsTable() {
     const changeClass = m.quantity_change > 0 ? "text-success" : "text-danger";
     const typeBadgeClass = getTypeBadgeClass(m.movement_type);
     const typeLabel = escapeHtml(formatMovementType(m.movement_type));
-    const reason = escapeHtml(m.reason || "—");
+    const reason = escapeHtml(m.reason) || "‐";
 
-    html += `
+     html += `
       <tr>
-        <td>
+        <td class="inventory-tcell">
           <div>${escapeHtml(date)}</div>
           <small class="text-muted">${escapeHtml(time)}</small>
         </td>
-        <td>${productName}</td>
-        <td><span class="badge ${typeBadgeClass}">${typeLabel}</span></td>
-        <td class="text-end ${changeClass} fw-medium">${change}</td>
-        <td class="text-end">${escapeHtml(m.stock_after)}</td>
-        <td class="text-muted small">${reason}</td>
+        <td class="inventory-tcell">${productName}</td>
+        <td class="inventory-tcell"><span class="badge ${typeBadgeClass}">${typeLabel}</span></td>
+        <td class="inventory-tcell text-end ${changeClass} fw-medium">${change}</td>
+        <td class="inventory-tcell text-end">${escapeHtml(m.stock_after)}</td>
+        <td class="reason-column inventory-tcell text-muted small">${reason}</td>
       </tr>
     `;
   });

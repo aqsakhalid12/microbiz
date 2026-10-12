@@ -167,17 +167,17 @@ function renderProductsTable() {
           <small class="text-muted">${stock} units</small>
         </td>
         <td class="text-end">
-          <div class="btn-group btn-group-sm" role="group">
+          <div class="btn-group btn-group-sm d-flex gap-1" role="group" style="flex-wrap: nowrap;">
             <button type="button" class="btn btn-outline-secondary edit-btn" title="Edit">
               <i class="bi bi-pencil"></i>
             </button>
-            <button type="button" class="btn btn-outline-primary adjust-btn" title="Adjust stock">
-              <i class="bi bi-arrows-alt"></i>
+            <button type="button" class="btn btn-outline-primary adjust-btn flex-shrink-0" title="Adjust stock">
+              <i class="bi bi-arrow-left-right"></i>
             </button>
-            <button type="button" class="btn btn-outline-info history-btn" title="View history">
+            <button type="button" class="btn btn-outline-info history-btn flex-shrink-0" title="View history">
               <i class="bi bi-clock-history"></i>
             </button>
-            <button type="button" class="btn btn-outline-danger delete-btn" title="Delete">
+            <button type="button" class="btn btn-outline-danger delete-btn flex-shrink-0" title="Delete">
               <i class="bi bi-trash"></i>
             </button>
           </div>
@@ -225,17 +225,17 @@ function renderProductsTable() {
             </div>
           </div>
           <div class="text-muted small mb-2">${category} · ${stock} units</div>
-          <div class="d-flex btn-group btn-group-sm" role="group">
-            <button type="button" class="btn btn-outline-secondary edit-btn" title="Edit">
+          <div class="d-flex btn-group btn-group-sm d-flex gap-1" role="group" style="flex-wrap: nowrap;">
+            <button type="button" class="btn btn-outline-secondary edit-btn flex-shrink-0" title="Edit">
               <i class="bi bi-pencil"></i>
             </button>
-            <button type="button" class="btn btn-outline-primary adjust-btn" title="Adjust stock">
-              <i class="bi bi-arrows-alt"></i>
+            <button type="button" class="btn btn-outline-primary adjust-btn flex-shrink-0" title="Adjust stock">
+              <i class="bi bi-arrow-left-right"></i>
             </button>
-            <button type="button" class="btn btn-outline-info history-btn" title="View history">
+            <button type="button" class="btn btn-outline-info history-btn flex-shrink-0" title="View history">
               <i class="bi bi-clock-history"></i>
             </button>
-            <button type="button" class="btn btn-outline-danger delete-btn" title="Delete">
+            <button type="button" class="btn btn-outline-danger delete-btn flex-shrink-0" title="Delete">
               <i class="bi bi-trash"></i>
             </button>
           </div>
@@ -525,32 +525,33 @@ async function loadStockHistory() {
     } else {
       let html = `
         <div class="table-responsive">
-          <table class="table table-sm table-hover mb-0">
+          <table class="table table-sm table-hover mb-0 history-table">
             <thead class="table-light">
               <tr>
                 <th>Date</th>
                 <th>Type</th>
-                <th>Change</th>
-                <th>Stock After</th>
-                <th>Reason</th>
+                <th class="text-end">Change</th>
+                <th class="text-end">Stock After</th>
+                <th class="reason-column">Reason</th>
               </tr>
             </thead>
             <tbody>
-        `;
+          `;
       movements.forEach((m) => {
         const date = formatDate(m.created_at);
         const change = m.quantity_change > 0 ? `+${m.quantity_change}` : `${m.quantity_change}`;
         const changeClass = m.quantity_change > 0 ? "text-success" : "text-danger";
         const badgeClass = getTypeBadgeClass(m.movement_type);
         const typeLabel = m.movement_type.replace("_", " ");
+        const reason = escapeHtml(m.reason) || "‐";
 
         html += `
           <tr>
-            <td>${escapeHtml(date)}<br><small class="text-muted">${escapeHtml(formatTime(m.created_at))}</small></td>
-            <td><span class="badge ${badgeClass}">${escapeHtml(typeLabel)}</span></td>
-            <td class="${changeClass}">${change}</td>
-            <td>${escapeHtml(m.stock_after)}</td>
-            <td class="text-muted small">${escapeHtml(m.reason || "—")}</td>
+            <td class="history-tcell">${escapeHtml(date)}<br><small class="text-muted">${escapeHtml(formatTime(m.created_at))}</small></td>
+            <td class="history-tcell"><span class="badge ${badgeClass}">${escapeHtml(typeLabel)}</span></td>
+            <td class="history-tcell text-end ${changeClass}">${change}</td>
+            <td class="history-tcell text-end">${escapeHtml(m.stock_after)}</td>
+            <td class="reason-column history-tcell text-muted small">${reason}</td>
           </tr>
         `;
       });
