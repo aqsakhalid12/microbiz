@@ -1,0 +1,10 @@
+{
+  "name": "microbiz",
+  "version": "0.1.0",
+  "description": "Small business management web application for home-based businesses and independent sellers",
+  "main": "backend/src/server.js",
+  "scripts": {
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "license": "ISC"
+}
