@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventory — MicroBiz</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" href="/css/variables.css" />
+    <link rel="stylesheet" href="/css/base.css" />
+    <link rel="stylesheet" href="/css/layout.css" />
+    <link rel="stylesheet" href="/css/components.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="app-sidebar"></div>
+      <div class="app-main">
+        <header id="app-topbar"></header>
+        <main class="app-content">
+          <!-- Page header -->
+          <div class="d-sm-flex d-block justify-content-between align-items-center mb-4">
+            <h1 class="h4 mb-0">Inventory</h1>
+          </div>
+
+          <!-- Filter bar -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                  <label for="product-filter" class="form-label">Product</label>
+                  <select class="form-select" id="product-filter">
+                    <option value="">All Products</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label for="type-filter" class="form-label">Movement Type</label>
+                  <select class="form-select" id="type-filter">
+                    <option value="">All Types</option>
+                    <option value="initial_stock">Initial Stock</option>
+                    <option value="purchase">Purchase</option>
+                    <option value="sale">Sale</option>
+                    <option value="cancellation_restore">Cancellation Restore</option>
+                    <option value="adjustment">Adjustment</option>
+                  </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                  <button type="button" class="btn btn-outline-secondary w-100" id="reset-filters-btn">
+                    Reset
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Inventory movements table / loading / empty / error state -->
+          <div class="card">
+            <div class="card-body">
+              <div id="inventory-content">
+                <!-- Loading skeleton shown initially -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination controls -->
+          <div id="pagination-controls" class="mt-3">
+            <!-- Filled by inventory.js -->
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="/js/pages/inventory.js"></script>
+  </body>
+</html>

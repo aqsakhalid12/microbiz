@@ -11,7 +11,7 @@ Small business management web application for home-based businesses and independ
 
 ## Project status
 
-Phase 5 complete: frontend layout and design system
+Phase 6 complete: products and inventory
 
 ## Pages & routes
 
@@ -21,6 +21,8 @@ Phase 5 complete: frontend layout and design system
 | `GET /login` | login.html | guests (redirects to `/dashboard` if logged in) |
 | `GET /register` | register.html | guests |
 | `GET /dashboard` | dashboard.html | logged-in users |
+| `GET /products` | products.html | logged-in users |
+| `GET /inventory` | inventory.html | logged-in users |
 
 The design system includes CSS variables, base styles, layout (sidebar/topbar), and components (stat cards, badges, empty states, skeletons, tables, forms, toasts). All UI is built with HTML5, CSS3, and vanilla JavaScript using Bootstrap 5.3 (CDN) and Bootstrap Icons (CDN).
 
@@ -50,6 +52,34 @@ Demo login (development only, after `npm run db:seed` and `npm run db:demo-passw
 
 See `docs/security.md` for the full security design (password rules, session
 settings, rate limiting, CSRF, and the data isolation rule).
+
+## API Endpoints
+
+### Auth
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/register` | Create account (validates input, bcrypt-hashes the password) and log in |
+| POST | `/api/auth/login` | Log in (regenerates the session to prevent fixation) |
+| POST | `/api/auth/logout` | Log out (destroys the session and clears the cookie) |
+| GET | `/api/auth/me` | Current user profile; requires login (`401` otherwise) |
+
+### Products & Inventory
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/products` | List products (query: search, category, stock, page, limit, sort) |
+| GET | `/api/products/categories` | List product categories |
+| GET | `/api/products/low-stock` | List low-stock products |
+| GET | `/api/products/:id` | Get a single product |
+| POST | `/api/products` | Create a product |
+| PUT | `/api/products/:id` | Update a product (stock_quantity not allowed) |
+| DELETE | `/api/products/:id` | Soft-delete a product |
+| POST | `/api/products/:id/stock-adjustments` | Adjust product stock |
+| GET | `/api/products/:id/movements` | List movement history for a product |
+| GET | `/api/inventory/movements` | List all inventory movements (query: product_id, type, page, limit) |
+
+See `docs/api-products.md` for full request/response documentation.
 
 ## Folder structure
 

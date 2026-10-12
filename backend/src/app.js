@@ -11,6 +11,8 @@ const sessionMiddleware = require("./config/session");
 const csrfOriginCheck = require("./middleware/csrfOriginCheck");
 const healthRoutes = require("./routes/health.routes");
 const authRoutes = require("./routes/auth.routes");
+const productRoutes = require("./routes/product.routes");
+const inventoryRoutes = require("./routes/inventory.routes");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
 // Directory for HTML page files (served via custom routes).
@@ -64,6 +66,8 @@ app.use(csrfOriginCheck);
 // API routes.
 app.use(healthRoutes);
 app.use(authRoutes);
+app.use(productRoutes);
+app.use(inventoryRoutes);
 
 // Page routes (before static so these URLs stay stable even if
 // files with the same names are added to the static root).
@@ -82,6 +86,16 @@ app.get(["/login", "/register"], (req, res) => {
 app.get("/dashboard", (req, res) => {
   if (!req.session.userId) return res.redirect("/login");
   res.sendFile(path.join(PAGES_DIR, "dashboard.html"));
+});
+
+app.get("/products", (req, res) => {
+  if (!req.session.userId) return res.redirect("/login");
+  res.sendFile(path.join(PAGES_DIR, "products.html"));
+});
+
+app.get("/inventory", (req, res) => {
+  if (!req.session.userId) return res.redirect("/login");
+  res.sendFile(path.join(PAGES_DIR, "inventory.html"));
 });
 
 // Serve static files (CSS/JS/images/HTML) from the "frontend" folder.

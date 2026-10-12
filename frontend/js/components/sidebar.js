@@ -4,10 +4,11 @@
 import { api } from "/js/api/client.js";
 import { escapeHtml } from "/js/components/ui.js";
 
-// Navigation links. Only Dashboard is implemented; the rest are placeholders.
+// Navigation links. Dashboard, Products, and Inventory are implemented; the rest are placeholders.
 const NAV_LINKS = [
   { href: "/dashboard", label: "Dashboard", icon: "bi-speedometer2", enabled: true },
-  { label: "Products", icon: "bi-box-seam", enabled: false },
+  { href: "/products", label: "Products", icon: "bi-box-seam", enabled: true },
+  { href: "/inventory", label: "Inventory", icon: "bi-box-seam", enabled: true },
   { label: "Customers", icon: "bi-people", enabled: false },
   { label: "Orders", icon: "bi-cart", enabled: false },
   { label: "Expenses", icon: "bi-cash-coin", enabled: false },
