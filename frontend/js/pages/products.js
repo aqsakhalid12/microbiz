@@ -145,28 +145,37 @@ function renderProductsTable() {
     const costPrice = formatCurrency(product.cost_price, state.currencyCode);
     const stock = product.stock_quantity;
     const badge = stockBadge(product);
+    const imageUrl = product.image_url ? escapeHtml(product.image_url) : "";
+    const hasImage = !!product.image_url;
+    const thumbBtnAttrs = hasImage
+      ? `type="button" class="product-thumb-btn" data-image-url="${imageUrl}" data-product-name="${name}" aria-label="View image of ${name}"`
+      : "";
+    const thumbContent = hasImage
+      ? `<img src="${imageUrl}" alt="" loading="lazy" referrerpolicy="no-referrer" class="product-img" style="width: 48px; height: 48px; object-fit: cover; border-radius: 8px; background: #f8f9fa;">`
+      : '<i class="bi bi-image" style="font-size: 1.5rem; color: #6c757d;"></i>';
 
     html += `
       <tr data-product-id="${product.id}">
-        <td>
+        <td data-label="Product">
           <div class="d-flex align-items-center">
-            <div class="me-3 text-center" style="width: 40px; height: 40px; background: #f8f9fa; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
-              <i class="bi bi-image" style="font-size: 1.5rem; color: #6c757d;"></i>
+            <div class="me-3 text-center d-none d-md-flex">
+              <button ${thumbBtnAttrs} style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border: none; background: #f8f9fa; border-radius: 8px; padding: 0; cursor: ${hasImage ? "pointer" : "default"}; transition: transform 150ms ease;">${thumbContent}</button>
             </div>
             <div>
               <div class="fw-medium">${name}</div>
+              <span class="text-muted small d-inline d-md-none">${sku}</span>
             </div>
           </div>
         </td>
-        <td><span class="text-muted small">${sku}</span></td>
-        <td>${category}</td>
-        <td>${sellingPrice}</td>
-        <td>${costPrice}</td>
-        <td>
+        <td data-label="SKU"><span class="text-muted small">${sku}</span></td>
+        <td data-label="Category">${category}</td>
+        <td data-label="Selling Price">${sellingPrice}</td>
+        <td data-label="Cost Price">${costPrice}</td>
+        <td data-label="Stock">
           <div>${badge}</div>
           <small class="text-muted">${stock} units</small>
         </td>
-        <td class="text-end">
+        <td class="text-end" data-label="Actions">
           <div class="btn-group btn-group-sm d-flex gap-1" role="group" style="flex-wrap: nowrap;">
             <button type="button" class="btn btn-outline-secondary edit-btn" title="Edit">
               <i class="bi bi-pencil"></i>
@@ -192,61 +201,32 @@ function renderProductsTable() {
     </div>
   `;
 
-  // Mobile stacked cards version
-  html += `<div class="d-block d-md-none">`;
-
-  state.products.forEach((product) => {
-    const name = escapeHtml(product.name || "—");
-    const sku = escapeHtml(product.sku || "—");
-    const category = escapeHtml(product.category || "—");
-    const sellingPrice = formatCurrency(product.selling_price, state.currencyCode);
-    const costPrice = formatCurrency(product.cost_price, state.currencyCode);
-    const stock = product.stock_quantity;
-    const badge = stockBadge(product);
-
-    html += `
-      <div class="card mb-3" data-product-id="${product.id}">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start mb-2">
-            <div>
-              <h6 class="fw-semibold mb-1">${name}</h6>
-              <span class="badge bg-light text-dark small">${sku}</span>
-            </div>
-            ${badge}
-          </div>
-          <div class="row g-2 text-center mb-2">
-            <div class="col-6">
-              <small class="text-muted">Sell</small>
-              <div class="fw-medium">${sellingPrice}</div>
-            </div>
-            <div class="col-6">
-              <small class="text-muted">Cost</small>
-              <div class="fw-medium">${costPrice}</div>
-            </div>
-          </div>
-          <div class="text-muted small mb-2">${category} · ${stock} units</div>
-          <div class="d-flex btn-group btn-group-sm d-flex gap-1" role="group" style="flex-wrap: nowrap;">
-            <button type="button" class="btn btn-outline-secondary edit-btn flex-shrink-0" title="Edit">
-              <i class="bi bi-pencil"></i>
-            </button>
-            <button type="button" class="btn btn-outline-primary adjust-btn flex-shrink-0" title="Adjust stock">
-              <i class="bi bi-arrow-left-right"></i>
-            </button>
-            <button type="button" class="btn btn-outline-info history-btn flex-shrink-0" title="View history">
-              <i class="bi bi-clock-history"></i>
-            </button>
-            <button type="button" class="btn btn-outline-danger delete-btn flex-shrink-0" title="Delete">
-              <i class="bi bi-trash"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-  });
-
-  html += `</div>`;
+  // Mobile stacked cards handled by CSS below 768px
 
   elements.productsContent.innerHTML = html;
+
+  // Attach error handlers for product images (fallback to placeholder)
+  elements.productsContent.querySelectorAll(".product-img").forEach((img) => {
+    img.addEventListener("error", () => {
+      img.outerHTML = '<i class="bi bi-image" style="font-size: 1.5rem; color: #6c757d;"></i>';
+    });
+  });
+
+  // Image lightbox: event delegation on thumbnail buttons
+  elements.productsContent.querySelectorAll(".product-thumb-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const imageUrl = btn.dataset.imageUrl;
+      const productName = btn.dataset.productName;
+      openImageModal(imageUrl, productName);
+    });
+    // Hover zoom effect
+    btn.addEventListener("mouseenter", () => {
+      btn.style.transform = "scale(1.05)";
+    });
+    btn.addEventListener("mouseleave", () => {
+      btn.style.transform = "scale(1)";
+    });
+  });
 
   // Wire action buttons
   wireActionButtons();
@@ -433,7 +413,94 @@ function openAddProductModal() {
   if (!form) return;
   form.reset();
   clearFormErrors(form);
+  // Reset image preview
+  resetImagePreview("add");
   state.modals.addProduct.show();
+}
+
+/**
+ * Update image preview for Add/Edit modal.
+ * @param {string} prefix - "add" or "edit"
+ * @param {string} url - image URL
+ */
+function updateImagePreview(prefix, url) {
+  const previewContainer = document.getElementById(`${prefix}-image-preview`);
+  const previewImg = document.getElementById(`${prefix}-image-preview-img`);
+  const placeholder = document.getElementById(`${prefix}-image-preview-placeholder`);
+
+  if (!previewContainer || !previewImg || !placeholder) return;
+
+  if (url && url.trim()) {
+    previewContainer.style.display = "block";
+    previewImg.src = url;
+    previewImg.style.display = "block";
+    placeholder.style.display = "none";
+  } else {
+    previewContainer.style.display = "none";
+    previewImg.src = "";
+    previewImg.style.display = "none";
+    placeholder.style.display = "none";
+  }
+}
+
+/**
+ * Handle image load error for preview.
+ * @param {string} prefix - "add" or "edit"
+ */
+function handleImagePreviewError(prefix) {
+  const previewImg = document.getElementById(`${prefix}-image-preview-img`);
+  const placeholder = document.getElementById(`${prefix}-image-preview-placeholder`);
+  if (previewImg && placeholder) {
+    previewImg.style.display = "none";
+    placeholder.style.display = "flex";
+  }
+}
+
+/**
+ * Reset image preview to hidden state.
+ * @param {string} prefix - "add" or "edit"
+ */
+function resetImagePreview(prefix) {
+  const previewContainer = document.getElementById(`${prefix}-image-preview`);
+  const previewImg = document.getElementById(`${prefix}-image-preview-img`);
+  const placeholder = document.getElementById(`${prefix}-image-preview-placeholder`);
+  if (previewContainer) previewContainer.style.display = "none";
+  if (previewImg) {
+    previewImg.src = "";
+    previewImg.style.display = "none";
+  }
+  if (placeholder) placeholder.style.display = "none";
+}
+
+/**
+ * Open the image lightbox modal.
+ * @param {string} imageUrl - The image URL to display
+ * @param {string} productName - The product name for the title
+ */
+function openImageModal(imageUrl, productName) {
+  const modalEl = document.getElementById("image-modal");
+  const modalImg = document.getElementById("image-modal-img");
+  const modalError = document.getElementById("image-modal-error");
+  const modalTitle = document.getElementById("image-modal-label");
+  if (!modalEl || !modalImg || !modalError || !modalTitle) return;
+
+  modalTitle.textContent = productName;
+  modalError.style.display = "none";
+  modalImg.style.display = "none";
+  modalImg.src = imageUrl;
+
+  // Handle load/error
+  modalImg.onload = () => {
+    modalImg.style.display = "block";
+    modalError.style.display = "none";
+  };
+  modalImg.onerror = () => {
+    modalImg.style.display = "none";
+    modalError.style.display = "block";
+  };
+
+  const modal = new bootstrap.Modal(modalEl);
+  modal.show();
 }
 
 /**
@@ -456,6 +523,17 @@ async function openEditModal(id) {
     document.getElementById("edit-low-stock").value = product.low_stock_threshold || "";
     document.getElementById("edit-image").value = product.image_url || "";
     document.getElementById("edit-description").value = product.description || "";
+
+    // Hide stock input field, show display text
+    const stockField = document.getElementById("edit-stock-field");
+    const stockDisplay = document.getElementById("edit-stock-display");
+    const stockDisplayText = document.getElementById("edit-stock-display-text");
+    if (stockField) stockField.style.display = "none";
+    if (stockDisplay) stockDisplay.style.display = "block";
+    if (stockDisplayText) stockDisplayText.textContent = `Current stock: ${product.stock_quantity} units. Use the Adjust stock button to change it.`;
+
+    // Update image preview
+    updateImagePreview("edit", product.image_url || "");
 
     clearFormErrors(document.getElementById("edit-product-form"));
     state.modals.editProduct.show();
@@ -709,6 +787,22 @@ function wireEvents() {
     applyFilters();
   });
 
+  // Image URL live preview for Add modal
+  document.getElementById("add-image")?.addEventListener("input", (e) => {
+    updateImagePreview("add", e.target.value);
+  });
+  document.getElementById("add-image-preview-img")?.addEventListener("error", () => {
+    handleImagePreviewError("add");
+  });
+
+  // Image URL live preview for Edit modal
+  document.getElementById("edit-image")?.addEventListener("input", (e) => {
+    updateImagePreview("edit", e.target.value);
+  });
+  document.getElementById("edit-image-preview-img")?.addEventListener("error", () => {
+    handleImagePreviewError("edit");
+  });
+
   // Add product form submit
   document.getElementById("add-product-form")?.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -761,6 +855,7 @@ function wireEvents() {
     const payload = {};
     formData.forEach((value, key) => {
       if (key === "id") return;
+      if (key === "stock_quantity") return; // Never send stock_quantity from Edit modal
       payload[key] = value === "" ? null : value;
     });
     // Convert numeric fields

@@ -522,6 +522,79 @@
   }
 }
 
+/* Responsive: Stack products table as cards below 768px */
+@media (max-width: 767.98px) {
+  .table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .table table,
+  .table tbody,
+  .table tr,
+  .table td {
+    display: block;
+    width: 100%;
+  }
+
+  .table tr {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .table td {
+    padding: 0.5rem 0;
+    border: none;
+    text-align: left !important;
+  }
+
+  .table td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.25rem;
+  }
+
+  .table td:last-child {
+    padding-top: 0.75rem;
+    margin-top: 0.25rem;
+    border-top: 1px solid var(--gray-100);
+  }
+
+  .product-thumb {
+    width: 48px;
+    height: 48px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-thumb i {
+    font-size: 1.5rem;
+    color: #6c757d;
+  }
+
+  .product-thumb-btn:hover {
+    transform: scale(1.05);
+  }
+}
+
 /* ==== Form styling ==== */
 .form-label {
   font-weight: 600;
@@ -628,4 +701,54 @@
   padding-left: 2rem;
   min-width: 220px;
   text-align: left;
+}
+
+/* ==== Modal footer styling for product modals ==== */
+#add-product-modal .modal-footer,
+#edit-product-modal .modal-footer,
+#adjust-stock-modal .modal-footer,
+#stock-history-modal .modal-footer {
+  padding: 1rem 1.5rem;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  border-top: 1px solid var(--gray-200);
+  flex-shrink: 0;
+}
+
+#add-product-modal .modal-footer .btn,
+#edit-product-modal .modal-footer .btn,
+#adjust-stock-modal .modal-footer .btn,
+#stock-history-modal .modal-footer .btn {
+  min-width: 100px;
+  height: auto;
+}
+
+/* ==== Product modal flex layout: fixed header/footer, scrollable body ==== */
+#add-product-modal .modal-content,
+#edit-product-modal .modal-content {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 2rem);
+}
+
+#add-product-modal .modal-content > form,
+#edit-product-modal .modal-content > form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+#add-product-modal .modal-body,
+#edit-product-modal .modal-body {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding: 1rem 1.5rem;
+}
+
+#add-product-modal .modal-header,
+#edit-product-modal .modal-header {
+  flex-shrink: 0;
+  padding: 1rem 1.5rem;
 }
