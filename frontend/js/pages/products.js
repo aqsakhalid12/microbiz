@@ -121,7 +121,7 @@ function renderProductsTable() {
 
   // Desktop table version
   html += `
-    <div class="table-responsive d-none d-md-block">
+    <div class="table-responsive">
       <table class="table table-hover align-middle mb-0">
         <thead class="table-light">
           <tr>
@@ -158,16 +158,16 @@ function renderProductsTable() {
       <tr data-product-id="${product.id}">
         <td data-label="Product">
           <div class="d-flex align-items-center">
-            <div class="me-3 text-center d-none d-md-flex">
-              <button ${thumbBtnAttrs} style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border: none; background: #f8f9fa; border-radius: 8px; padding: 0; cursor: ${hasImage ? "pointer" : "default"}; transition: transform 150ms ease;">${thumbContent}</button>
+            <div class="me-3">
+              <button ${thumbBtnAttrs} style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border: none; background: #f8f9fa; border-radius: 10px; padding: 0; cursor: ${hasImage ? "pointer" : "default"}; transition: transform 150ms ease;">${thumbContent}</button>
             </div>
             <div>
               <div class="fw-medium">${name}</div>
-              <span class="text-muted small d-inline d-md-none">${sku}</span>
+              <span class="text-muted small">${sku}</span>
             </div>
           </div>
         </td>
-        <td data-label="SKU"><span class="text-muted small">${sku}</span></td>
+        <td data-label="SKU" class="d-none d-md-block"><span class="text-muted small">${sku}</span></td>
         <td data-label="Category">${category}</td>
         <td data-label="Selling Price">${sellingPrice}</td>
         <td data-label="Cost Price">${costPrice}</td>
