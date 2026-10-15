@@ -277,13 +277,59 @@ async function main() {
     check("8: overdraft adjustment returns 400", resp.status === 400, `status ${resp.status}, body: ${JSON.stringify(data)}`);
     check("8: overdraft message is 'Insufficient stock'", data && data.message === "Insufficient stock", JSON.stringify(data));
 
-    // Stock should still be 20
-    const productResult = await api(`/api/products/${productIdA}`, {}, cookieA);
-    check("8: stock unchanged after failed adjustment", productResult.data && productResult.data.data && productResult.data.data.stock_quantity === 20, JSON.stringify(productResult.data));
-  }
+     // Stock should still be 20
+     const productResult = await api(`/api/products/${productIdA}`, {}, cookieA);
+     check("8: stock unchanged after failed adjustment", productResult.data && productResult.data.data && productResult.data.data.stock_quantity === 20, JSON.stringify(productResult.data));
+   }
 
-  // =================================
-  // TEST 9: Two concurrent adjustments of -1 on stock 1 -> exactly one succeeds
+   // =================================
+   // TEST 8a: Adjust purchase WITH reason -> reason preserved
+   // =================================
+   {
+     const { resp, data } = await api(`/api/products/${productIdA}/stock-adjustments`, {
+       method: "POST",
+       body: JSON.stringify({
+         movement_type: "purchase",
+         quantity_change: 5,
+         reason: "Supplier delivery",
+       }),
+     }, cookieA);
+
+     check("8a: adjust stock with reason returns 200", resp.status === 200, `status ${resp.status}, body: ${JSON.stringify(data)}`);
+     check("8a: stock updated to 25", data && data.data && data.data.stock_quantity === 25, JSON.stringify(data));
+
+     // Verify movement was recorded with correct reason
+     const movementsResult = await api(`/api/products/${productIdA}/movements`, {}, cookieA);
+     check("8a: movements include purchase", movementsResult.data && movementsResult.data.data, JSON.stringify(movementsResult.data));
+     const purchaseMovement = movementsResult.data.data.find((m) => m.movement_type === "purchase" && m.quantity_change === 5);
+     check("8a: purchase movement recorded with correct reason", purchaseMovement && purchaseMovement.reason === "Supplier delivery", `reason: ${JSON.stringify(purchaseMovement?.reason)}`);
+   }
+
+   // =================================
+   // TEST 8b: Adjust purchase WITHOUT reason -> default reason used
+   // =================================
+   {
+     const { resp, data } = await api(`/api/products/${productIdA}/stock-adjustments`, {
+       method: "POST",
+       body: JSON.stringify({
+         movement_type: "purchase",
+         quantity_change: 3,
+         // No reason provided
+       }),
+     }, cookieA);
+
+     check("8b: adjust stock without reason returns 200", resp.status === 200, `status ${resp.status}, body: ${JSON.stringify(data)}`);
+     check("8b: stock updated to 28", data && data.data && data.data.stock_quantity === 28, JSON.stringify(data));
+
+     // Verify movement was recorded with default reason
+     const movementsResult = await api(`/api/products/${productIdA}/movements`, {}, cookieA);
+     check("8b: movements include purchase", movementsResult.data && movementsResult.data.data, JSON.stringify(movementsResult.data));
+     const purchaseMovement = movementsResult.data.data.find((m) => m.movement_type === "purchase" && m.quantity_change === 3);
+     check("8b: purchase movement recorded with default reason", purchaseMovement && purchaseMovement.reason === "Stock purchase", `reason: ${JSON.stringify(purchaseMovement?.reason)}`);
+   }
+
+   // =================================
+   // TEST 9: Two concurrent adjustments of -1 on stock 1 -> exactly one succeeds
   // =================================
   {
     // Create a product with stock 1

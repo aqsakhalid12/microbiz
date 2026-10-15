@@ -313,11 +313,11 @@ function validateStockAdjustment(input) {
     throw new AppError("Validation failed", 400, { fields });
   }
 
-  return {
-    movement_type: data.movement_type,
-    quantity_change: Number(data.quantity_change),
-    reason: data.movement_type === "adjustment" ? data.reason.trim() : "Stock purchase",
-  };
+    return {
+      movement_type: data.movement_type,
+      quantity_change: Number(data.quantity_change),
+      reason: data.movement_type === "adjustment" ? data.reason.trim() : (data.reason?.trim() || "Stock purchase"),
+    };
 }
 
 /**
