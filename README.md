@@ -11,7 +11,7 @@ Small business management web application for home-based businesses and independ
 
 ## Project status
 
-Phase 6 complete: products and inventory
+Phase 7 complete: customer management
 
 ## Pages & routes
 
@@ -22,7 +22,8 @@ Phase 6 complete: products and inventory
 | `GET /register` | register.html | guests |
 | `GET /dashboard` | dashboard.html | logged-in users |
 | `GET /products` | products.html | logged-in users |
-| `GET /inventory` | inventory.html | logged-in users |
+| GET /inventory | inventory.html | logged-in users |
+| GET /customers | customers.html | logged-in users |
 
 The design system includes CSS variables, base styles, layout (sidebar/topbar), and components (stat cards, badges, empty states, skeletons, tables, forms, toasts). All UI is built with HTML5, CSS3, and vanilla JavaScript using Bootstrap 5.3 (CDN) and Bootstrap Icons (CDN).
 

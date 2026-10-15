@@ -9,7 +9,7 @@ const NAV_LINKS = [
   { href: "/dashboard", label: "Dashboard", icon: "bi-speedometer2", enabled: true },
   { href: "/products", label: "Products", icon: "bi-box-seam", enabled: true },
   { href: "/inventory", label: "Inventory", icon: "bi-box-seam", enabled: true },
-  { label: "Customers", icon: "bi-people", enabled: false },
+  { href: "/customers", label: "Customers", icon: "bi-people", enabled: true },
   { label: "Orders", icon: "bi-cart", enabled: false },
   { label: "Expenses", icon: "bi-cash-coin", enabled: false },
   { label: "Reports", icon: "bi-bar-chart-line", enabled: false },

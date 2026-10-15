@@ -13,6 +13,7 @@ const healthRoutes = require("./routes/health.routes");
 const authRoutes = require("./routes/auth.routes");
 const productRoutes = require("./routes/product.routes");
 const inventoryRoutes = require("./routes/inventory.routes");
+const customerRoutes = require("./routes/customer.routes");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
 // Directory for HTML page files (served via custom routes).
@@ -68,6 +69,7 @@ app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/inventory", inventoryRoutes);
+app.use("/api/customers", customerRoutes);
 
 // Page routes (before static so these URLs stay stable even if
 // files with the same names are added to the static root).
@@ -98,6 +100,11 @@ app.get("/inventory", (req, res) => {
   res.sendFile(path.join(PAGES_DIR, "inventory.html"));
 });
 
+app.get("/customers", (req, res) => {
+  if (!req.session.userId) return res.redirect("/login");
+  res.sendFile(path.join(PAGES_DIR, "customers.html"));
+});
+
 // Serve static files (CSS/JS/images/HTML) from the "frontend" folder.
 // __dirname is backend/src, so two levels up is the project root.
 app.use(express.static(path.join(__dirname, "..", "..", "frontend")));
@@ -109,3 +116,8 @@ app.use(notFound);
 app.use(errorHandler);
 
 module.exports = app;
+
+
+
+
+
