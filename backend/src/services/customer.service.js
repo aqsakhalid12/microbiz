@@ -38,6 +38,7 @@ async function deleteCustomer(userId, id) {
 
     // Check if customer has any orders (any order linked to this customer, regardless of status)
     const checkOrdersSql = "SELECT COUNT(*) AS cnt FROM orders WHERE customer_id = $1 AND user_id = $2";
+    const ordersRes = await client.query(checkOrdersSql, [id, userId]);
     const orderCount = parseInt(ordersRes.rows[0].cnt, 10);
     if (orderCount > 0) {
       await client.query("ROLLBACK");

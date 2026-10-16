@@ -1,3 +1,4 @@
+require('dotenv').config();
 // backend/tests/customers.test.js
 // Plain Node test script (no extra libraries). Runs against the
 // server at http://localhost:3000 — start it first (npm run dev).
@@ -137,9 +138,9 @@ async function main() {
 
   {
     const del = await api(`/api/customers/${customerIdA}`, { method: "DELETE" }, cookieA);
-    check("9a: delete returns 200", del.resp.status === 200, "");
+    check("9a: delete returns 200", del.resp.status === 200, `status ${del.resp.status}`);
     const get = await api(`/api/customers/${customerIdA}`, {}, cookieA);
-    check("9b: get after delete -> 404", get.resp.status === 404, "");
+    check("9b: get after delete -> 404", get.resp.status === 404, `status ${get.resp.status}`);
   }
 
   // test 10
@@ -150,11 +151,11 @@ async function main() {
   }
   const userAId = await getUserId(EMAIL_A);
   if (custWithOrderId && userAId) {
-    await pool.query(`INSERT INTO orders (user_id, customer_id, order_number, status, payment_status, subtotal, discount, total, amount_paid, stock_deducted) VALUES ($1,$2,$3,'Completed','Paid',10,0,10,10,true)`, [userAId, custWithOrderId, `ORD-${UNIQUE}-001`]);
+    await pool.query("INSERT INTO orders (user_id, customer_id, order_number, status, payment_status, subtotal, discount, total, amount_paid, stock_deducted, completed_at) VALUES ($1, $2, $3, 'Completed', 'Paid', 10, 0, 10, 10, true, NOW())", [userAId, custWithOrderId, `ORD-${UNIQUE}-001`]);
   }
   {
     const del = await api(`/api/customers/${custWithOrderId}`, { method: "DELETE" }, cookieA);
-    check("10: delete with order -> 409", del.resp.status === 409, "");
+    check("10: delete with order -> 409", del.resp.status === 409, `status ${del.resp.status}`);
     await pool.query("DELETE FROM orders WHERE user_id=$1 AND customer_id=$2", [userAId, custWithOrderId]);
   }
 
@@ -174,7 +175,7 @@ async function main() {
   }
   {
     const r = await api(`/api/customers/${custAId}`, { method: "DELETE" }, cookieB);
-    check("iso: B cannot DELETE A -> 404", r.resp.status === 404, "");
+    check("iso: B cannot DELETE A -> 404", r.resp.status === 404, `status ${r.resp.status}`);
   }
   {
     const r = await api(`/api/customers/${custAId}/orders`, {}, cookieB);
@@ -201,3 +202,8 @@ async function main() {
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
+
+
+
+
+
