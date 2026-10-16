@@ -14,6 +14,7 @@ const authRoutes = require("./routes/auth.routes");
 const productRoutes = require("./routes/product.routes");
 const inventoryRoutes = require("./routes/inventory.routes");
 const customerRoutes = require("./routes/customer.routes");
+const orderRoutes = require("./routes/order.routes");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
 // Directory for HTML page files (served via custom routes).
@@ -70,6 +71,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/customers", customerRoutes);
+app.use("/api/orders", orderRoutes);
 
 // Page routes (before static so these URLs stay stable even if
 // files with the same names are added to the static root).

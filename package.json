@@ -12,7 +12,9 @@
     "db:reset": "node database/scripts/migrate.js --reset",
     "db:demo-password": "node database/scripts/set-demo-password.js",
     "test:auth": "node backend/tests/auth.test.js",
-    "test:products": "node backend/tests/products.test.js","test:customers": "node backend/tests/customers.test.js"
+    "test:products": "node backend/tests/products.test.js",
+    "test:customers": "node backend/tests/customers.test.js",
+    "test:orders": "node backend/tests/orders.test.js"
   },
   "license": "ISC",
   "dependencies": {
