@@ -774,6 +774,22 @@
   height: auto;
 }
 
+/* ==== Expense modal footer styling ==== */
+#add-expense-modal .modal-footer,
+#edit-expense-modal .modal-footer {
+  padding: 1rem 1.5rem;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  border-top: 1px solid var(--gray-200);
+  flex-shrink: 0;
+}
+
+#add-expense-modal .modal-footer .btn,
+#edit-expense-modal .modal-footer .btn {
+  min-width: 100px;
+  height: auto;
+}
+
 /* ==== Product modal flex layout: fixed header/footer, scrollable body ==== */
 #add-product-modal .modal-content,
 #edit-product-modal .modal-content {

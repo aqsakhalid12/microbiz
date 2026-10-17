@@ -14,6 +14,7 @@ const authRoutes = require("./routes/auth.routes");
 const productRoutes = require("./routes/product.routes");
 const inventoryRoutes = require("./routes/inventory.routes");
 const customerRoutes = require("./routes/customer.routes");
+const expenseRoutes = require("./routes/expense.routes");
 const orderRoutes = require("./routes/order.routes");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
@@ -71,6 +72,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/customers", customerRoutes);
+app.use("/api/expenses", expenseRoutes);
 app.use("/api/orders", orderRoutes);
 
 // Page routes (before static so these URLs stay stable even if
@@ -110,6 +112,11 @@ app.get("/customers", (req, res) => {
 app.get("/orders", (req, res) => {
   if (!req.session.userId) return res.redirect("/login");
   res.sendFile(path.join(PAGES_DIR, "orders.html"));
+});
+
+app.get("/expenses", (req, res) => {
+  if (!req.session.userId) return res.redirect("/login");
+  res.sendFile(path.join(PAGES_DIR, "expenses.html"));
 });
 
 // Serve static files (CSS/JS/images/HTML) from the "frontend" folder.

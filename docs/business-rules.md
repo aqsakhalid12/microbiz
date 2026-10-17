@@ -42,3 +42,10 @@
 ## Transactions
 
 - Order creation, status changes, stock deduction, stock restoration, and payment recording run inside database transactions.
+
+## Expenses
+
+- Expense reporting and totals are filtered by `expense_date` (the date the expense was incurred), not `created_at`.
+- Expense amounts are stored as `NUMERIC(12,2)` and validated server-side: required, greater than 0, max 2 decimals, max 9999999999.99.
+- `expense_date` must be a valid `YYYY-MM-DD` and cannot be in the future.
+- Every expense is scoped to its owning user (`user_id`); users can only view, update, or delete their own expenses. Deletes are hard deletes.

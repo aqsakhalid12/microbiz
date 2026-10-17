@@ -11,7 +11,7 @@ Small business management web application for home-based businesses and independ
 
 ## Project status
 
-Phase 8 complete: order management
+Phase 9 complete: expenses
 
 ## Pages & routes
 
@@ -25,6 +25,7 @@ Phase 8 complete: order management
 | GET /inventory | inventory.html | logged-in users |
 | GET /customers | customers.html | logged-in users |
 | GET /orders | orders.html | logged-in users |
+| GET /expenses | expenses.html | logged-in users |
 
 The design system includes CSS variables, base styles, layout (sidebar/topbar), and components (stat cards, badges, empty states, skeletons, tables, forms, toasts). All UI is built with HTML5, CSS3, and vanilla JavaScript using Bootstrap 5.3 (CDN) and Bootstrap Icons (CDN).
 
@@ -82,6 +83,19 @@ settings, rate limiting, CSRF, and the data isolation rule).
 | GET | `/api/inventory/movements` | List all inventory movements (query: product_id, type, page, limit) |
 
 See `docs/api-products.md` for full request/response documentation.
+
+### Expenses
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/expenses` | List expenses (query: search, category, date_from, date_to, page, limit, sort) |
+| GET | `/api/expenses/categories` | List distinct expense categories of the current user |
+| GET | `/api/expenses/:id` | Get a single expense |
+| POST | `/api/expenses` | Create an expense |
+| PUT | `/api/expenses/:id` | Update an expense |
+| DELETE | `/api/expenses/:id` | Hard-delete an expense |
+
+See `docs/api-expenses.md` for full request/response documentation.
 
 ## Folder structure
 
