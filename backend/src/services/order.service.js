@@ -49,16 +49,16 @@ async function createOrder(userId, data) {
 
     const productById = new Map();
     for (const row of productRows) {
-      productById.set(row.id, row);
+      productById.set(Number(row.id), row);
     }
 
     // Merge duplicate product lines (sum quantities).
     const mergedItems = new Map();
     for (const item of data.items) {
-      const pid = item.product_id;
+      const pid = Number(item.product_id);
       const product = productById.get(pid);
       if (!product) {
-        throw new AppError(`Product not found: ${pid}`, 404);
+        throw new AppError(`Product not found (invalid id: ${pid})`, 404);
       }
       if (product.deleted_at !== null) {
         throw new AppError(
@@ -236,17 +236,17 @@ async function updateOrder(userId, id, data) {
     );
     const productById = new Map();
     for (const row of productRows) {
-      productById.set(row.id, row);
+      productById.set(Number(row.id), row);
     }
 
     // Merge duplicate product lines.
     const mergedItems = new Map();
     for (const item of data.items) {
-      const pid = item.product_id;
+      const pid = Number(item.product_id);
       const product = productById.get(pid);
       if (!product) {
         await client.query("ROLLBACK");
-        throw new AppError(`Product not found: ${pid}`, 404);
+        throw new AppError(`Product not found (invalid id: ${pid})`, 404);
       }
       if (product.deleted_at !== null) {
         await client.query("ROLLBACK");
@@ -425,14 +425,14 @@ async function confirmOrderAndDeductStock(client, order) {
   );
   const productById = new Map();
   for (const row of locked) {
-    productById.set(row.id, row);
+    productById.set(Number(row.id), row);
   }
 
   // Verify stock for all items before deducting anything.
   for (const item of items) {
-    const product = productById.get(item.product_id);
+    const product = productById.get(Number(item.product_id));
     if (!product) {
-      throw new AppError(`Product not found: ${item.product_id}`, 404);
+      throw new AppError(`Product not found (invalid id: ${item.product_id})`, 404);
     }
     if (product.deleted_at !== null) {
       throw new AppError(
@@ -450,7 +450,7 @@ async function confirmOrderAndDeductStock(client, order) {
 
   // Deduct stock and insert 'sale' movements.
   for (const item of items) {
-    const product = productById.get(item.product_id);
+    const product = productById.get(Number(item.product_id));
     const newStock = product.stock_quantity - item.quantity;
 
     await orderRepository.updateProductStock(client, product.id, newStock);
@@ -495,11 +495,11 @@ async function restoreStockOnCancel(client, order) {
   );
   const productById = new Map();
   for (const row of locked) {
-    productById.set(row.id, row);
+    productById.set(Number(row.id), row);
   }
 
   for (const item of items) {
-    const product = productById.get(item.product_id);
+    const product = productById.get(Number(item.product_id));
     if (!product) continue;
     const newStock = product.stock_quantity + item.quantity;
 

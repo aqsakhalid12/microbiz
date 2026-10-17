@@ -10,7 +10,7 @@ const NAV_LINKS = [
   { href: "/products", label: "Products", icon: "bi-box-seam", enabled: true },
   { href: "/inventory", label: "Inventory", icon: "bi-box-seam", enabled: true },
   { href: "/customers", label: "Customers", icon: "bi-people", enabled: true },
-  { label: "Orders", icon: "bi-cart", enabled: false },
+  { href: "/orders", label: "Orders", icon: "bi-cart", enabled: true },
   { label: "Expenses", icon: "bi-cash-coin", enabled: false },
   { label: "Reports", icon: "bi-bar-chart-line", enabled: false },
   { label: "Settings", icon: "bi-gear", enabled: false },

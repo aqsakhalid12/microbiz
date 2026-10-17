@@ -107,6 +107,11 @@ app.get("/customers", (req, res) => {
   res.sendFile(path.join(PAGES_DIR, "customers.html"));
 });
 
+app.get("/orders", (req, res) => {
+  if (!req.session.userId) return res.redirect("/login");
+  res.sendFile(path.join(PAGES_DIR, "orders.html"));
+});
+
 // Serve static files (CSS/JS/images/HTML) from the "frontend" folder.
 // __dirname is backend/src, so two levels up is the project root.
 app.use(express.static(path.join(__dirname, "..", "..", "frontend")));

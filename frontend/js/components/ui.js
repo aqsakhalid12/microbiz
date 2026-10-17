@@ -27,15 +27,25 @@ export function showToast(type, message) {
   container.appendChild(toastEl);
 
   // Initialize and show toast (Bootstrap 5)
-  const toast = new bootstrap.Toast(toastEl, {
-    autohide: true,
-    delay: 4000,
-  });
-  toast.show();
+  let toast = null;
+  if (typeof bootstrap !== "undefined" && bootstrap.Toast) {
+    toast = bootstrap.Toast.getOrCreateInstance(toastEl, {
+      autohide: true,
+      delay: 4000,
+    });
+    toast.show();
+  } else {
+    toastEl.classList.add("show");
+    setTimeout(() => {
+      toastEl.remove();
+    }, 4000);
+  }
 
   // Remove from DOM when hidden to avoid buildup
   toastEl.addEventListener("hidden.bs.toast", () => {
-    toastEl.dispose();
+    if (toast && typeof toast.dispose === "function") {
+      try { toast.dispose(); } catch (e) { /* ignore */ }
+    }
     toastEl.remove();
   });
 }
