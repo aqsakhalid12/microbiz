@@ -167,7 +167,7 @@ function renderProductsTable() {
             </div>
           </div>
         </td>
-        <td data-label="SKU" class="d-none d-md-block"><span class="text-muted small">${sku}</span></td>
+        <td data-label="SKU" class="d-none d-md-table-cell"><span>${sku}</span></td>
         <td data-label="Category">${category}</td>
         <td data-label="Selling Price">${sellingPrice}</td>
         <td data-label="Cost Price">${costPrice}</td>

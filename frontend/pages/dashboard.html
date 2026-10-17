@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="/css/base.css" />
     <link rel="stylesheet" href="/css/layout.css" />
     <link rel="stylesheet" href="/css/components.css" />
+<link rel="stylesheet" href="/css/dashboard.css" />
   </head>
   <body>
     <div id="app" class="dashboard-page">
@@ -23,71 +24,50 @@
       <div class="app-main">
         <header id="app-topbar"></header>
         <main class="app-content">
-          <!-- Welcome banner -->
-          <div class="welcome-banner mb-4">
-            <div class="welcome-banner-inner">
-              <div class="welcome-text">
-                <h1 class="h3 fw-bold mb-1" id="greeting">Welcome back</h1>
-                <p class="mb-0" id="greeting-sub">Loading…</p>
-              </div>
-              <div class="welcome-controls">
-                <select class="form-select" disabled>
-                  <option>This month</option>
-                </select>
-                <button type="button" class="btn btn-light" disabled>
-                  <i class="bi bi-plus-lg"></i> Quick add
-                </button>
-              </div>
+          <div class="dash-header">
+            <div>
+              <h1 class="dash-title">Overview</h1>
+              <p class="dash-sub" id="greeting-sub">Loading…</p>
+            </div>
+            <div class="dash-actions">
+              <a href="/orders" class="dash-btn dash-btn-primary">New order</a>
+              <a href="/products" class="dash-btn dash-btn-secondary">Add product</a>
             </div>
           </div>
 
-          <!-- Stat cards -->
-          <div class="stat-card-grid" id="stat-cards">
-            <!-- Filled in by dashboard.js -->
-          </div>
+          <div class="stat-strip" id="stat-cards"></div>
 
-          <!-- Sales overview + Low-stock alerts -->
-          <div class="dashboard-panels mb-4">
-            <div class="panel-sales">
-              <div class="card h-100 panel-card">
-                <div class="card-header bg-white py-3 panel-header">
-                  <div>
-                    <h2 class="h6 mb-0">Sales overview</h2>
-                    <p class="text-muted small mb-0">
-                      Charts will appear here once you have completed orders.
-                    </p>
-                  </div>
-                </div>
-                <div class="card-body" id="sales-chart-empty"></div>
+          <div class="dash-panels">
+            <div class="panel">
+              <div class="panel-header">
+                <h2 class="panel-title">Sales overview</h2>
+                <a href="/orders" class="panel-link">View all</a>
               </div>
+              <div class="panel-body" id="sales-chart-empty"></div>
             </div>
-            <div class="panel-lowstock">
-              <div class="card h-100 panel-card">
-                <div class="card-header bg-white py-3 panel-header">
-                  <div>
-                    <h2 class="h6 mb-0">Low-stock alerts</h2>
-                    <p class="text-muted small mb-0">
-                      Products below their low-stock threshold.
-                    </p>
-                  </div>
-                </div>
-                <div class="card-body" id="low-stock-empty"></div>
+            <div class="panel">
+              <div class="panel-header">
+                <h2 class="panel-title">Low-stock products</h2>
+                <a href="/products" class="panel-link">View all</a>
               </div>
+              <div class="panel-body" id="low-stock-empty"></div>
             </div>
           </div>
 
-          <!-- Recent orders -->
-          <div class="mb-4">
-            <div class="card h-100 panel-card">
-              <div class="card-header bg-white py-3 panel-header">
-                <div>
-                  <h2 class="h6 mb-0">Recent orders</h2>
-                  <p class="text-muted small mb-0">
-                    Your latest orders across all statuses.
-                  </p>
-                </div>
-              </div>
-              <div class="card-body" id="recent-orders-empty"></div>
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title">Recent orders</h2>
+              <a href="/orders" class="panel-link">View all</a>
+            </div>
+            <div class="panel-body">
+              <table class="orders-table">
+                <thead>
+                  <tr><th>Order</th><th>Customer</th><th>Status</th><th>Total</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td colspan="4" class="orders-empty">No orders to show yet.</td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </main>

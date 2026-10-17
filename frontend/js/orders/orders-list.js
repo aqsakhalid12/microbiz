@@ -83,7 +83,7 @@ function renderOrders() {
       <td data-label="Payment">${paymentBadge(o.payment_status)}</td>
       <td data-label="Items">${o.item_count}</td>
       <td data-label="Total">${total}</td>
-      <td class="text-end" data-label="Actions"><button type="button" class="btn btn-sm btn-outline-secondary view-btn" title="View"><i class="bi bi-eye"></i></button> <button type="button" class="btn btn-sm btn-outline-primary edit-btn" title="Edit"><i class="bi bi-pencil"></i></button></td>
+      <td class="text-end" data-label="Actions"><button type="button" class="btn btn-sm btn-outline-secondary view-btn" title="View"><i class="bi bi-eye"></i></button>${o.status === "Pending" ? ' <button type="button" class="btn btn-sm btn-outline-primary edit-btn" title="Edit"><i class="bi bi-pencil"></i></button>' : ""}</td>
     </tr>`;
   });
   html += '</tbody></table></div>';

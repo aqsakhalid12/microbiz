@@ -608,6 +608,44 @@
   }
 }
 
+/* Desktop: keep table cells as proper table-cells (undo any mobile stacked-card / utility display leaks) */
+@media (min-width: 768px) {
+  .table th,
+  .table td,
+  .inventory-table th,
+  .inventory-table td,
+  .customers-table th,
+  .customers-table td,
+  .orders-table th,
+  .orders-table td {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--gray-200);
+    border-bottom: none;
+    margin: 0;
+    transform: none;
+    position: static;
+  }
+  .table th::before,
+  .table td::before,
+  .inventory-table th::before,
+  .inventory-table td::before,
+  .customers-table th::before,
+  .customers-table td::before,
+  .orders-table th::before,
+  .orders-table td::before {
+    content: none;
+    display: none;
+  }
+  .table td .text-muted.small,
+  .table td .small {
+    margin: 0;
+    display: inline;
+    vertical-align: middle;
+  }
+}
+
 /* ==== Form styling ==== */
 .form-label {
   font-weight: 600;

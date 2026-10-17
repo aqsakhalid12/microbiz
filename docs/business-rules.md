@@ -17,17 +17,28 @@
 
 ## Stock management
 
-- Stock is deducted exactly once (proposed: when an order moves to Confirmed).
-- Stock is restored when a Confirmed/Processing order is cancelled.
-- Stock never goes negative.
-- Every change is recorded in `inventory_movements`.
+- Stock is deducted exactly once, when an order moves `Pending -> Confirmed` (set `stock_deducted = true`).
+- Stock is restored once when a `Confirmed` or `Processing` order is cancelled (`Cancelled`, `stock_deducted` reset to false). Cancelling twice never restores twice (`stock_deducted` guard).
+- Cancelling a `Pending` order deducts nothing (no stock was deducted).
+- Stock never goes negative: confirmation is rejected with `Insufficient stock for <product>.` if any line exceeds available stock.
+- Every change is recorded in `inventory_movements` (`sale` on confirm, `cancellation_restore` on cancel).
+
+## Order status transitions
+
+| From | Allowed to |
+|------|------------|
+| `Pending` | `Confirmed`, `Cancelled` |
+| `Confirmed` | `Processing`, `Completed`, `Cancelled` |
+| `Processing` | `Completed`, `Cancelled` |
+| `Completed` | (none — final) |
+| `Cancelled` | (none — final) |
+
+## Payments
+
+- `PATCH /api/orders/:id/payment` records the **new total amount paid so far** (not an increment), between 0 and the order total, max 2 decimals.
+- `payment_status` is derived server-side: 0 = `Unpaid`, > 0 and < total = `Partially Paid`, = total = `Paid`.
+- Payments are not allowed on `Cancelled` orders.
 
 ## Transactions
 
-- Order creation, status changes, stock deduction, and stock restoration run inside database transactions.
-
-## Open assumptions
-
-1. **Exact moment of stock deduction** — proposed: when an order moves to Confirmed.
-2. **How partial payments are recorded** — to be decided in Phase 8.
-3. **Which date is used for expense reporting** — to be decided.
+- Order creation, status changes, stock deduction, stock restoration, and payment recording run inside database transactions.
