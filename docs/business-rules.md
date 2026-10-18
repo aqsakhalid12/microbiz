@@ -49,3 +49,59 @@
 - Expense amounts are stored as `NUMERIC(12,2)` and validated server-side: required, greater than 0, max 2 decimals, max 9999999999.99.
 - `expense_date` must be a valid `YYYY-MM-DD` and cannot be in the future.
 - Every expense is scoped to its owning user (`user_id`); users can only view, update, or delete their own expenses. Deletes are hard deletes.
+
+## Dashboard / Reports (Phase 10)
+
+All report endpoints are authenticated (`requireAuth`) and **every query is
+filtered by `req.user.id`**. The user id is never accepted from the client.
+
+### Date ranges
+
+- `date_from` and `date_to` are validated as `YYYY-MM-DD`, must be real
+  calendar dates, `date_from <= date_to`, and the range must not exceed
+  366 days.
+- When omitted, the default range is the **current month**: first day of the
+  current month through today (inclusive).
+- All date filtering happens in the **server timezone**. A range of
+  `[date_from 00:00, date_to + 1 day)` is used for `TIMESTAMPTZ` columns
+  (`orders.completed_at`, `orders.order_date`); `DATE` columns
+  (`expenses.expense_date`) use the plain inclusive bounds.
+
+### Revenue, costs and profit
+
+- **Revenue** = `sum(orders.total)` for orders with `status = 'Completed'`
+  and `completed_at` inside the range.
+- **Cost of goods** = `sum(order_items.quantity * order_items.unit_cost)`
+  for those same completed orders (uses the snapshot stored at sale time).
+- **Gross profit** = revenue - cost of goods.
+- **Expenses** = `sum(expenses.amount)` with `expense_date` inside the range.
+- **Net profit** = gross profit - expenses.
+- **Cash collected** = `sum(orders.amount_paid)` for orders with
+  `status <> 'Cancelled'` and `order_date` inside the range. Shown
+  separately, never mixed with revenue.
+- **Average order value** = revenue / completed order count (0 when there
+  are no completed orders).
+
+### Order counts
+
+- **Orders count** = orders created in range (all statuses), based on
+  `order_date`.
+- **Completed count** = completed orders in range, based on `completed_at`.
+- **Pending count** = orders with `status = 'Pending'` (current state, not
+  range-based).
+- **Cancelled count** = orders with `status = 'Cancelled'` created in range
+  (based on `order_date`).
+
+### Stock
+
+- **Low stock** = products with `deleted_at IS NULL` and
+  `stock_quantity <= low_stock_threshold` (current state).
+- **Out of stock** = products with `deleted_at IS NULL` and
+  `stock_quantity = 0` (current state).
+
+### Money
+
+- All money math is done in SQL on `NUMERIC` columns, or in integer cents
+  in application code. Floats are **never** used for money.
+- `BIGINT` ids and `NUMERIC` values come back from `pg` as strings and are
+  normalised to numbers by every repository before returning to a caller.
