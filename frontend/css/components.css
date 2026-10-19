@@ -233,18 +233,6 @@
   gap: 1rem;
   margin-bottom: 2rem;
 }
-
-.page-header .page-header-icon {
-  font-size: 2rem;
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--primary-light);
-  border-radius: var(--radius);
-  color: var(--primary);
-}
 .page-header .page-header-title {
   font-size: 1.8rem;
   font-weight: 600;
