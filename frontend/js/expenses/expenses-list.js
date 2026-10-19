@@ -71,6 +71,8 @@ function showError(message) {
     icon: "bi-emoji-frown",
     title: "Something went wrong",
     text: message,
+    actionLabel: "Retry",
+    onAction: () => loadExpenses(1),
   });
 }
 

@@ -42,7 +42,7 @@ function showLoading() {
 function showError(message) {
   if (!elements.customersContent) return;
   elements.customersContent.innerHTML = "";
-  renderEmptyState(elements.customersContent, { icon: "bi-emoji-frown", title: "Something went wrong", text: message });
+  renderEmptyState(elements.customersContent, { icon: "bi-emoji-frown", title: "Something went wrong", text: message, actionLabel: "Retry", onAction: () => loadCustomers(1) });
 }
 
 function showEmpty() {

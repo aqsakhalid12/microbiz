@@ -82,14 +82,22 @@ export function setButtonLoading(button, isLoading) {
  *   title: heading text
  *   text: body text
  */
-export function renderEmptyState(container, {icon, title, text}) {
+export function renderEmptyState(container, {icon, title, text, actionLabel, onAction}) {
   if (!container) return;
+  const actionHtml = actionLabel
+    ? `<button type="button" class="btn btn-sm btn-outline-secondary mt-2 empty-state-action">${escapeHtml(actionLabel)}</button>`
+    : "";
   container.innerHTML = `
     <div class="empty-state">
       <div class="empty-state-icon"><i class="bi ${icon}"></i></div>
       <p class="empty-state-title">${escapeHtml(title)}</p>
       <p class="empty-state-text mb-0">${escapeHtml(text)}</p>
+      ${actionHtml}
     </div>`;
+  if (actionLabel && typeof onAction === "function") {
+    const btn = container.querySelector(".empty-state-action");
+    if (btn) btn.addEventListener("click", onAction);
+  }
 }
 
 /**

@@ -57,7 +57,7 @@ function showLoading() {
 function showError(message) {
   if (!elements.ordersContent) return;
   elements.ordersContent.innerHTML = "";
-  renderEmptyState(elements.ordersContent, { icon: "bi-exclamation-triangle", title: "Something went wrong", text: message });
+  renderEmptyState(elements.ordersContent, { icon: "bi-exclamation-triangle", title: "Something went wrong", text: message, actionLabel: "Retry", onAction: () => loadOrders(1) });
 }
 
 function showEmpty() {
