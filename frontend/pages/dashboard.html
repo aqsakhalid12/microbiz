@@ -27,47 +27,80 @@
           <div class="dash-header">
             <div>
               <h1 class="dash-title">Overview</h1>
-              <p class="dash-sub" id="greeting-sub">Loading…</p>
+              <p class="dash-sub" id="dash-subtitle"></p>
             </div>
             <div class="dash-actions">
-              <a href="/orders" class="dash-btn dash-btn-primary">New order</a>
-              <a href="/products" class="dash-btn dash-btn-secondary">Add product</a>
+              <select id="range-select" class="form-select form-select-sm">
+                <option value="this_month">This month</option>
+                <option value="last_30">Last 30 days</option>
+                <option value="last_3m">Last 3 months</option>
+                <option value="this_year">This year</option>
+              </select>
+              <a class="dash-btn dash-btn-primary" href="/orders">New order</a>
+              <a class="dash-btn dash-btn-secondary" href="/products">Add product</a>
             </div>
           </div>
 
-          <div class="stat-strip" id="stat-cards"></div>
+          <div class="stat-strip" id="stat-strip">
+            <div class="stat-cell">
+              <div class="stat-label-row"><i class="bi bi-currency-dollar"></i><span>Revenue</span></div>
+              <p class="stat-value" id="stat-revenue">-</p>
+              <div class="stat-caption" id="cap-revenue">caption</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-label-row"><i class="bi bi-graph-up-arrow"></i><span>Gross profit</span></div>
+              <p class="stat-value" id="stat-gross">-</p>
+              <div class="stat-caption" id="cap-gross">caption</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-label-row"><i class="bi bi-receipt"></i><span>Expenses</span></div>
+              <p class="stat-value" id="stat-expenses">-</p>
+              <div class="stat-caption" id="cap-expenses">caption</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-label-row"><i class="bi bi-piggy-bank"></i><span>Net profit</span></div>
+              <p class="stat-value" id="stat-net">-</p>
+              <div class="stat-caption" id="cap-net">caption</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-label-row"><i class="bi bi-bag-check"></i><span>Orders</span></div>
+              <p class="stat-value" id="stat-orders">-</p>
+              <div class="stat-caption" id="cap-orders">caption</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-label-row"><i class="bi bi-hourglass-split"></i><span>Pending orders</span></div>
+              <p class="stat-value" id="stat-pending">-</p>
+              <div class="stat-caption" id="cap-pending">caption</div>
+            </div>
+          </div>
 
           <div class="dash-panels">
             <div class="panel">
               <div class="panel-header">
                 <h2 class="panel-title">Sales overview</h2>
-                <a href="/orders" class="panel-link">View all</a>
               </div>
-              <div class="panel-body" id="sales-chart-empty"></div>
+              <div class="panel-body">
+                <div id="sales-chart"></div>
+              </div>
             </div>
             <div class="panel">
               <div class="panel-header">
                 <h2 class="panel-title">Low-stock products</h2>
-                <a href="/products" class="panel-link">View all</a>
+                <a class="panel-link" href="/products">View all</a>
               </div>
-              <div class="panel-body" id="low-stock-empty"></div>
+              <div class="panel-body">
+                <div id="low-stock-list"></div>
+              </div>
             </div>
           </div>
 
           <div class="panel">
             <div class="panel-header">
               <h2 class="panel-title">Recent orders</h2>
-              <a href="/orders" class="panel-link">View all</a>
+              <a class="panel-link" href="/orders">View all</a>
             </div>
             <div class="panel-body">
-              <table class="orders-table">
-                <thead>
-                  <tr><th>Order</th><th>Customer</th><th>Status</th><th>Total</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td colspan="4" class="orders-empty">No orders to show yet.</td></tr>
-                </tbody>
-              </table>
+              <div id="recent-orders"></div>
             </div>
           </div>
         </main>
