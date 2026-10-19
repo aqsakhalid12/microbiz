@@ -6,6 +6,7 @@ import {
   setButtonLoading,
   showFormErrors,
   clearFormErrors,
+  escapeHtml,
 } from "/js/components/ui.js";
 import { initSidebar } from "/js/components/sidebar.js";
 
@@ -77,7 +78,7 @@ async function loadSettings() {
       const div = document.createElement("div");
       div.className = "alert alert-danger d-flex align-items-center justify-content-between";
       div.innerHTML = `
-        <span>${err.message || "Failed to load settings"}</span>
+        <span>${escapeHtml(err.message || "Failed to load settings")}</span>
         <button type="button" class="btn btn-sm btn-outline-danger" id="settings-retry">Retry</button>
       `;
       container.appendChild(div);
