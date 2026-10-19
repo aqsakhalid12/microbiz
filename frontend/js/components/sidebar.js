@@ -13,7 +13,7 @@ const NAV_LINKS = [
   { href: "/orders", label: "Orders", icon: "bi-cart", enabled: true },
   { href: "/expenses", label: "Expenses", icon: "bi-cash-coin", enabled: true },
   { label: "Reports", icon: "bi-bar-chart-line", enabled: false },
-  { label: "Settings", icon: "bi-gear", enabled: false },
+  { href: "/settings", label: "Settings", icon: "bi-gear", enabled: true },
 ];
 
 /**
