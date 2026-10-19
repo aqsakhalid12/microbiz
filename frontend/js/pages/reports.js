@@ -83,16 +83,16 @@ function renderSummary(s) {
   const net = Number(s.net_profit ?? s.net ?? 0), cash = Number(s.cash_collected ?? 0);
   const aov = total > 0 ? revenue / total : 0;
   const cards = [
-    { l: "Revenue", v: formatCurrency(revenue, currency) },
-    { l: "Cost of goods", v: formatCurrency(cogs, currency) },
-    { l: "Gross profit", v: formatCurrency(gross, currency) },
-    { l: "Expenses", v: formatCurrency(expenses, currency) },
-    { l: "Net profit", v: formatCurrency(net, currency), neg: net < 0 },
-    { l: "Cash collected", v: formatCurrency(cash, currency) },
-    { l: "Orders", v: String(total), cap: `${completed} completed / ${pending} pending / ${cancelled} cancelled` },
-    { l: "Average order value", v: formatCurrency(aov, currency) },
+    { l: "Revenue", v: formatCurrency(revenue, currency), cap: "Completed orders only" },
+    { l: "Cost of goods", v: formatCurrency(cogs, currency), cap: "Of completed orders" },
+    { l: "Gross profit", v: formatCurrency(gross, currency), cap: "Revenue minus cost" },
+    { l: "Expenses", v: formatCurrency(expenses, currency), cap: "In selected period" },
+    { l: "Net profit", v: formatCurrency(net, currency), neg: net < 0, cap: "Gross profit minus expenses" },
+    { l: "Cash collected", v: formatCurrency(cash, currency), cap: "Payments received" },
+    { l: "Orders", v: String(total), cap: `${completed} completed, ${pending} pending, ${cancelled} cancelled` },
+    { l: "Average order value", v: formatCurrency(aov, currency), cap: "Per completed order" },
   ];
-  container.innerHTML = `<div class="row g-3">${cards.map(c => `<div class="col-md-3 col-sm-6"><div class="card border border-secondary p-3"><div class="text-muted small">${escapeHtml(c.l)}</div><div class="${c.neg ? "text-danger" : ""} fw-bold">${escapeHtml(c.v)}</div>${c.cap ? `<div class="text-muted small mt-1">${escapeHtml(c.cap)}</div>` : ""}</div></div>`).join("")}</div>`;
+  container.innerHTML = `<div class="row g-3 align-items-stretch">${cards.map(c => `<div class="col-md-3 col-sm-6 d-flex"><div class="card border border-secondary p-3 h-100 w-100"><div class="text-muted small">${escapeHtml(c.l)}</div><div class="${c.neg ? "text-danger" : ""} fw-bold">${escapeHtml(c.v)}</div><div class="summary-caption text-muted mt-1">${escapeHtml(c.cap)}</div></div></div>`).join("")}</div>`;
 }
 
 function renderTrend(rows) {
@@ -153,12 +153,12 @@ function renderTopProducts(rows) {
   if (!container) return;
   const data = Array.isArray(rows) ? rows : [];
   if (!data.length) { container.innerHTML = `<p class="text-muted mb-0">No completed orders in this period.</p>`; return; }
-  container.innerHTML = `<ol class="list-group list-group-numbered">${data.map(r => {
+  container.innerHTML = `<table class="table mb-0"><tbody>${data.map((r, i) => {
     const name = escapeHtml(r.product_name ?? r.name ?? r.product ?? "");
     const qty = Number(r.quantity_sold ?? r.quantity ?? r.sold ?? 0);
-    const rev = formatCurrency(Number(r.revenue ?? r.total ?? 0), currency);
-    return `<li class="list-group-item d-flex justify-content-between align-items-center"><span>${name}</span><span class="text-muted small">${qty} sold</span><span class="fw-bold">${escapeHtml(rev)}</span></li>`;
-  }).join("")}</ol>`;
+    const rev = escapeHtml(formatCurrency(Number(r.revenue ?? r.total ?? 0), currency));
+    return `<tr><td style="text-align:left;padding:0.6rem 0.75rem"><span class="text-muted small me-1">${i + 1}.</span>${name}</td><td style="text-align:right;padding:0.6rem 0.75rem" class="text-muted small">${qty} sold</td><td style="text-align:right;padding:0.6rem 0.75rem" class="fw-bold">${rev}</td></tr>`;
+  }).join("")}</tbody></table>`;
 }
 
 function renderExpenseCategories(rows) {
@@ -167,16 +167,15 @@ function renderExpenseCategories(rows) {
   const data = Array.isArray(rows) ? rows : [];
   if (!data.length) { container.innerHTML = `<p class="text-muted mb-0">No expenses in this period.</p>`; return; }
   const max = Math.max(...data.map(r => Number(r.amount ?? r.total ?? 0) || 0), 1);
-  container.innerHTML = data.map(r => {
+  container.innerHTML = data.map((r, i) => {
     const name = escapeHtml(r.category ?? r.category_name ?? r.name ?? "");
-    const amt = formatCurrency(Number(r.amount ?? r.total ?? 0), currency);
+    const amt = escapeHtml(formatCurrency(Number(r.amount ?? r.total ?? 0), currency));
     const pct = (Number(r.amount ?? r.total ?? 0) / max) * 100;
-    const id = "exp-bar-" + Math.random().toString(36).slice(2);
-    return `<div class="mb-2"><div class="d-flex justify-content-between"><span>${name}</span><span>${escapeHtml(amt)}</span></div><div style="height:6px;background:#e9ecef;border-radius:3px"><div id="${id}" style="height:6px;background:#4f46e5;border-radius:3px;width:0%"></div></div></div>`;
+    const last = i === data.length - 1 ? " last" : "";
+    return `<div class="expense-row${last}"><div class="expense-row-head"><span>${name}</span><span>${amt}</span></div><div class="expense-bar-track"><div class="expense-bar" data-pct="${pct}"></div></div></div>`;
   }).join("");
-  data.forEach((r, i) => {
-    const pct = (Number(r.amount ?? r.total ?? 0) / max) * 100;
-    const el = container.querySelectorAll("div[id^='exp-bar-']")[i];
-    if (el) el.style.width = pct + "%";
+  container.querySelectorAll(".expense-bar").forEach((el, i) => {
+    const pct = (Number(data[i].amount ?? data[i].total ?? 0) / max) * 100;
+    el.style.width = pct + "%";
   });
 }

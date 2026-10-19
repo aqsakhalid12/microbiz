@@ -802,8 +802,14 @@
   padding: 1rem 1.5rem;
 }
 
-#add-product-modal .modal-header,
-#edit-product-modal .modal-header {
-  flex-shrink: 0;
-  padding: 1rem 1.5rem;
-}
+#expense-categories { padding-top: 0.5rem; }
+#expense-categories .expense-row { margin-bottom: 1.25rem !important; }
+#expense-categories .expense-row:last-child { margin-bottom: 0 !important; }
+#expense-categories .expense-row-head { display: flex !important; justify-content: space-between !important; align-items: baseline !important; margin-bottom: 0.6rem !important; line-height: 1.4 !important; }
+#expense-categories .expense-bar-track { height: 8px !important; margin-top: 0 !important; }
+
+.expense-row { margin-bottom: 1rem; }
+.expense-row.last { margin-bottom: 0; }
+.expense-row-head { display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 0.9rem; }
+.expense-bar-track { height: 8px; background: #eef0f4; border-radius: 4px; overflow: hidden; }
+.expense-bar { height: 100%; border-radius: 4px; background: var(--primary, #4f46e5); }
