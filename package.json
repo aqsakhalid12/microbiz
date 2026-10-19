@@ -16,7 +16,8 @@
     "test:customers": "node backend/tests/customers.test.js",
     "test:orders": "node backend/tests/orders.test.js",
     "test:expenses": "node backend/tests/expenses.test.js",
-    "test:reports": "node backend/tests/reports.test.js"
+    "test:reports": "node backend/tests/reports.test.js",
+    "test:settings": "node backend/tests/settings.test.js"
   },
   "license": "ISC",
   "dependencies": {

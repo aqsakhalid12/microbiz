@@ -17,6 +17,7 @@ const customerRoutes = require("./routes/customer.routes");
 const expenseRoutes = require("./routes/expense.routes");
 const orderRoutes = require("./routes/order.routes");
 const reportRoutes = require("./routes/report.routes");
+const settingsRoutes = require("./routes/settings.routes");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
 // Directory for HTML page files (served via custom routes).
@@ -76,6 +77,7 @@ app.use("/api/customers", customerRoutes);
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/settings", settingsRoutes);
 
 // Page routes (before static so these URLs stay stable even if
 // files with the same names are added to the static root).
@@ -119,6 +121,11 @@ app.get("/orders", (req, res) => {
 app.get("/expenses", (req, res) => {
   if (!req.session.userId) return res.redirect("/login");
   res.sendFile(path.join(PAGES_DIR, "expenses.html"));
+});
+
+app.get("/settings", (req, res) => {
+  if (!req.session.userId) return res.redirect("/login");
+  res.sendFile(path.join(PAGES_DIR, "settings.html"));
 });
 
 // Serve static files (CSS/JS/images/HTML) from the "frontend" folder.
