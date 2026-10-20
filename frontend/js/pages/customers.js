@@ -1,9 +1,12 @@
 // frontend/js/pages/customers.js
 import { api } from "/js/api/client.js";
-import { renderEmptyState, renderSkeleton, escapeHtml, formatCurrency, showToast, setButtonLoading, showFormErrors, clearFormErrors } from "/js/components/ui.js";
+import { renderEmptyState, renderSkeleton, escapeHtml, formatCurrency, showToast, setButtonLoading, showFormErrors, clearFormErrors, initModalFocus } from "/js/components/ui.js";
 import { initSidebar } from "/js/components/sidebar.js";
 
 initSidebar();
+
+// Restore focus to the control that opened a modal when it is closed
+initModalFocus();
 
 const state = {
   customers: [],

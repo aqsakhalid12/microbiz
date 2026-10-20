@@ -1,11 +1,14 @@
 // frontend/js/pages/products.js
 // Product listing, filtering, sorting, pagination, and modal interactions.
 import { api } from "/js/api/client.js";
-import { renderEmptyState, renderSkeleton, escapeHtml, formatCurrency, showToast, setButtonLoading } from "/js/components/ui.js";
+import { renderEmptyState, renderSkeleton, escapeHtml, formatCurrency, showToast, setButtonLoading, initModalFocus } from "/js/components/ui.js";
 import { initSidebar } from "/js/components/sidebar.js";
 
 // Initialize the app shell (sidebar/topbar)
 initSidebar();
+
+// Restore focus to the control that opened a modal when it is closed
+initModalFocus();
 
 // Application state
 const state = {

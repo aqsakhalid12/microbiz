@@ -173,7 +173,7 @@ function renderRecentOrders(rows) {
       <td data-label="Date">${dateStr}</td>
     </tr>`;
   }).join("");
-  el.innerHTML = `<table class="orders-table"><thead><tr><th>Order</th><th>Customer</th><th>Status</th><th>Total</th><th>Date</th></tr></thead><tbody>${rowsHtml}</tbody></table>`;
+  el.innerHTML = `<div class="table-responsive"><table class="orders-table"><thead><tr><th>Order</th><th>Customer</th><th>Status</th><th>Total</th><th>Date</th></tr></thead><tbody>${rowsHtml}</tbody></table></div>`;
 }
 
 async function loadCharts() {

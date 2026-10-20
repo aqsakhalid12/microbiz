@@ -7,6 +7,7 @@ import {
   escapeHtml,
   formatCurrency,
   showToast,
+  initModalFocus,
 } from "/js/components/ui.js";
 import { initSidebar } from "/js/components/sidebar.js";
 import {
@@ -241,6 +242,8 @@ function wireListEvents() {
  */
 export function init() {
   initSidebar();
+  // Restore focus to the control that opened a modal when it is closed
+  initModalFocus();
   cacheElements();
   initExpenseForms({ onReload: () => loadExpenses(state.currentPage) });
   loadCategoriesIntoSelect();

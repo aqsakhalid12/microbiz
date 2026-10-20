@@ -257,7 +257,8 @@ function wireEvents() {
   });
 
   elements.modalEl.addEventListener("hidden.bs.modal", () => {
-    document.activeElement?.blur();
+    // Focus is handed back to the control that opened the modal by the
+    // shared modal focus manager, so it must not be cleared here.
     state.pendingAction = null;
     state.orderId = null;
     state.order = null;

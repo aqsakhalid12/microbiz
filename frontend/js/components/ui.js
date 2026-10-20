@@ -190,6 +190,74 @@ export function formatCurrency(amount, currencyCode) {
   }
 }
 
+/* ==== Modal focus management ==== */
+
+/* Element that opened each modal, so focus can be handed back to it. */
+const modalOpeners = new WeakMap();
+let modalFocusManagerInstalled = false;
+
+/**
+ * Move focus out of a modal that is being closed.
+ * Falls back to the control that opened the modal; if that control is gone
+ * the focused element is blurred so nothing stays focused inside a modal
+ * that is hidden from assistive technology.
+ * @param {HTMLElement} modalEl - the modal element
+ * @param {HTMLElement|null} opener - element that opened the modal
+ */
+function restoreModalFocus(modalEl, opener) {
+  if (opener && document.contains(opener) && typeof opener.focus === "function") {
+    opener.focus({ preventScroll: true });
+  }
+  if (modalEl.contains(document.activeElement)) {
+    document.activeElement.blur();
+  }
+}
+
+/**
+ * Install focus management for Bootstrap modals (once per page).
+ *
+ * Bootstrap hides a modal by setting `aria-hidden="true"` on the modal
+ * element once the fade-out transition finished. When a descendant of the
+ * modal still holds focus at that moment the browser refuses the change and
+ * logs "Blocked aria-hidden on an element because its descendant retained
+ * focus"; focus is also left on a hidden element instead of returning to the
+ * control that opened the modal.
+ *
+ * This helper remembers the control that opened each modal and gives focus
+ * back to it while the modal is closing, so focus is never left inside a
+ * hidden modal.
+ */
+export function initModalFocus() {
+  if (modalFocusManagerInstalled) return;
+  modalFocusManagerInstalled = true;
+
+  // Remember the control that had focus before the modal opened.
+  document.addEventListener("show.bs.modal", (event) => {
+    const modalEl = event.target;
+    const active = document.activeElement;
+    if (active && active !== document.body && !modalEl.contains(active)) {
+      modalOpeners.set(modalEl, active);
+    }
+  });
+
+  // Give focus back while the modal is still visible. The update is deferred
+  // by one tick because Bootstrap releases its focus trap right after this
+  // event, and the trap would otherwise pull focus back into the modal.
+  document.addEventListener("hide.bs.modal", (event) => {
+    const modalEl = event.target;
+    const opener = modalOpeners.get(modalEl);
+    queueMicrotask(() => restoreModalFocus(modalEl, opener));
+  });
+
+  // Safety net: never leave focus inside a modal that is hidden.
+  document.addEventListener("hidden.bs.modal", (event) => {
+    const modalEl = event.target;
+    if (modalEl.contains(document.activeElement)) {
+      restoreModalFocus(modalEl, modalOpeners.get(modalEl));
+    }
+  });
+}
+
 /**
  * Format a date using Intl.DateTimeFormat (date style only).
  * @param {string|Date} date - date string or Date object
