@@ -73,7 +73,7 @@ function renderOrders() {
   state.orders.forEach((o) => {
     const orderNumber = escapeHtml(o.order_number);
     const customer = escapeHtml(o.customer_name || "Walk-in");
-    const date = escapeHtml(o.order_date || "");
+    const date = o.order_date ? new Date(o.order_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "";
     const total = formatCurrency(o.total, state.currencyCode);
     html += `<tr data-order-id="${o.id}" data-label="">
       <td data-label="Order #">${orderNumber}</td>

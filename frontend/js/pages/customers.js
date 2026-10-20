@@ -235,10 +235,11 @@ async function openViewModal(customerId) {
       historyContent.innerHTML = '<div class="text-muted">No orders yet</div>';
     } else {
       let html = '<div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead class="table-light"><tr><th>Order #</th><th>Status</th><th>Payment</th><th>Total</th><th>Date</th></tr></thead><tbody>';
-      orders.forEach((order) => {
+orders.forEach((order) => {
         const statusBadge = order.status === "Completed" ? '<span class="badge bg-success">Completed</span>' : order.status === "Cancelled" ? '<span class="badge bg-secondary">Cancelled</span>' : order.status === "Confirmed" || order.status === "Processing" ? `<span class="badge bg-primary">${escapeHtml(order.status)}</span>` : `<span class="badge bg-warning text-dark">${escapeHtml(order.status)}</span>`;
+        const orderDate = order.order_date ? new Date(order.order_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—";
         const paymentBadge = order.payment_status === "Paid" ? '<span class="badge bg-success">Paid</span>' : order.payment_status === "Partially Paid" ? '<span class="badge bg-info text-dark">Partially Paid</span>' : '<span class="badge bg-secondary">Unpaid</span>';
-        html += `<tr><td data-label="Order #">${escapeHtml(order.order_number)}</td><td data-label="Status">${statusBadge}</td><td data-label="Payment">${paymentBadge}</td><td data-label="Total">${formatCurrency(order.total, state.currencyCode)}</td><td data-label="Date">${escapeHtml(order.order_date)}</td></tr>`;
+        html += `<tr><td data-label="Order #">${escapeHtml(order.order_number)}</td><td data-label="Status">${statusBadge}</td><td data-label="Payment">${paymentBadge}</td><td data-label="Total">${formatCurrency(order.total, state.currencyCode)}</td><td data-label="Date">${orderDate}</td></tr>`;
       });
       html += '</tbody></table></div>';
       historyContent.innerHTML = html;

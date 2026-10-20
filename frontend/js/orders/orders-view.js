@@ -71,7 +71,7 @@ function paymentBadge(ps) {
 
 function renderHeader(order) {
   elements.orderNumber.textContent = escapeHtml(order.order_number);
-  elements.orderDate.textContent = order.order_date ? new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(new Date(order.order_date)) : "—";
+  elements.orderDate.textContent = order.order_date ? new Date(order.order_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—";
   elements.orderStatus.innerHTML = statusBadge(order.status);
   elements.paymentStatus.innerHTML = paymentBadge(order.payment_status);
   elements.customer.textContent = order.customer ? escapeHtml(order.customer.name) : "Walk-in";
@@ -120,7 +120,7 @@ function renderStatusButtons(order) {
 
 function renderPayment(order, totals) {
   const { totalCents, balanceCents } = totals;
-  if (order.status === "Cancelled") { elements.paymentContainer.innerHTML = ""; return; }
+  if (order.status === "Cancelled" || balanceCents <= 0) { elements.paymentContainer.innerHTML = ""; return; }
   elements.paymentContainer.innerHTML = `
     <div class="row g-3 align-items-end">
       <div class="col-md-5">
@@ -181,6 +181,7 @@ async function executePayment() {
   const input = document.getElementById("view-payment-amount");
   const feedback = document.getElementById("view-payment-feedback");
   const btn = document.getElementById("view-btn-save-payment");
+  const payFullBtn = document.getElementById("view-btn-pay-full");
   input.classList.remove("is-invalid"); feedback.textContent = "";
 
   const raw = input.value.trim();
@@ -197,6 +198,7 @@ async function executePayment() {
 
   state.loading = true;
   setButtonLoading(btn, true);
+  setButtonLoading(payFullBtn, true);
   try {
     await api.patch(`/api/orders/${state.orderId}/payment`, { amount_paid: Number(raw) });
     showToast("success", "Payment recorded.");
@@ -211,6 +213,7 @@ async function executePayment() {
     }
   } finally {
     setButtonLoading(btn, false);
+    setButtonLoading(payFullBtn, false);
     state.loading = false;
   }
 }
@@ -243,15 +246,18 @@ function wireEvents() {
     executeStatusChange(action);
   });
 
-  elements.paymentContainer.addEventListener("click", (e) => {
+  elements.modalEl.addEventListener("click", (e) => {
     const btn = e.target.closest("#view-btn-pay-full, #view-btn-save-payment");
     if (!btn) return;
-    if (btn.id === "view-btn-save-payment") { executePayment(); return; }
-    const input = document.getElementById("view-payment-amount");
-    if (input) input.value = String((moneyCents(state.order.total) - moneyCents(state.order.amount_paid)) / 100);
+    if (btn.id === "view-btn-pay-full") {
+      const input = document.getElementById("view-payment-amount");
+      if (input) input.value = Number(state.order.total).toFixed(2);
+    }
+    executePayment();
   });
 
   elements.modalEl.addEventListener("hidden.bs.modal", () => {
+    document.activeElement?.blur();
     state.pendingAction = null;
     state.orderId = null;
     state.order = null;

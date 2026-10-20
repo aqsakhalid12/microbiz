@@ -166,20 +166,31 @@
   margin: 0 auto 0 1rem; /* center, with space for hamburger on left */
 }
 
-/* User dropdown in top bar */
-.app-topbar .dropdown-toggle {
-  display: flex;
+/* User avatar button in top bar */
+.user-avatar-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid #e5e7eb;
+  background: #eef0ff;
+  color: #4f46e5;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  color: var(--gray-700);
-  text-decoration: none;
-  font-size: 0.875rem;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
 }
-.app-topbar .dropdown-toggle i {
-  font-size: 1.25rem;
+.user-avatar-btn:hover {
+  background: #e0e3ff;
+}
+.user-avatar-btn:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
 }
 .app-topbar .dropdown-menu {
-  min-width: 10rem;
+  min-width: 220px;
   padding: 0.5rem 0;
 }
 .app-topbar .dropdown-header {
