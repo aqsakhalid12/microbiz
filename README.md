@@ -1,155 +1,211 @@
 # MicroBiz
 
-Small business management web application for home-based businesses and independent sellers.
+MicroBiz is a small business management web application for home-based businesses and independent sellers. It is an internal tool rather than a public store: a private workspace where the owner runs products, stock, customers, orders, expenses and reporting. There is no public catalogue, cart or checkout for outside visitors — every route and API call requires the signed-in owner. The frontend is plain HTML/CSS/vanilla JavaScript served by the same Express process that exposes the JSON API, so one Node.js process runs the whole product.
 
-## Tech Stack
+**Status:** All 13 planning phases implemented; deployment guide in docs/.
 
-- Frontend: HTML5, CSS3, Vanilla JavaScript, Bootstrap 5 (no React/Vue/Next.js)
-- Backend: Node.js, Express.js, REST APIs
-- Database: PostgreSQL using the `pg` package, with raw parameterized SQL (no ORM)
-- Delivery: dotenv, Postman, Git/GitHub. Express serves the static frontend initially (monolith).
+## Features
 
-## Project status
+- **Authentication with server-side sessions** — register, log in, log out; session records live in PostgreSQL, the browser only holds a cookie.
+- **Business settings** — business name, currency and profile for the signed-in owner.
+- **Dashboard with real data** — revenue, gross profit, expenses, net profit, order counts, sales trend, low-stock list and recent orders.
+- **Products and inventory movements** — product CRUD, soft delete, categories, search/filter/sort/pagination, stock adjustments and a full movement history.
+- **Customers** — customer CRUD with order history and spend totals.
+- **Orders** — order capture with safe stock transactions, a status workflow (Pending, Confirmed, Processing, Completed, Cancelled) and payment tracking (Unpaid, Partially Paid, Paid).
+- **Expenses** — expense CRUD with categories, search and date filters.
+- **Date-filtered reports** — summary, sales trend, low-stock and recent-orders reports over a selected period.
+- **Low-stock alerts** — per-product threshold surfaced on the dashboard and in reports.
 
-Phase 9 complete: expenses
+## Tech stack
 
-## Pages & routes
+- **Frontend:** HTML5, CSS3, Vanilla JavaScript, Bootstrap 5 (CDN) and Bootstrap Icons — no framework, no build step.
+- **Backend:** Node.js with Express 5, exposing a REST JSON API.
+- **Database:** PostgreSQL through the `pg` driver using raw, parameterized SQL — no ORM.
+- **Sessions and passwords:** `express-session` with `connect-pg-simple` (session table in PostgreSQL), passwords hashed with `bcryptjs`.
+- **Tooling:** dotenv, nodemon, Postman collections, Git.
 
-| Route | Page | Access |
-|-------|------|--------|
-| `GET /` | redirects to `/dashboard` | everyone |
-| `GET /login` | login.html | guests (redirects to `/dashboard` if logged in) |
-| `GET /register` | register.html | guests |
-| `GET /dashboard` | dashboard.html | logged-in users |
-| `GET /products` | products.html | logged-in users |
-| GET /inventory | inventory.html | logged-in users |
-| GET /customers | customers.html | logged-in users |
-| GET /orders | orders.html | logged-in users |
-| GET /expenses | expenses.html | logged-in users |
+## Architecture
 
-The design system includes CSS variables, base styles, layout (sidebar/topbar), and components (stat cards, badges, empty states, skeletons, tables, forms, toasts). All UI is built with HTML5, CSS3, and vanilla JavaScript using Bootstrap 5.3 (CDN) and Bootstrap Icons (CDN).
+Every request walks the same path, and each layer only talks to the one below it.
 
-## Running the app
+```
+Browser (static HTML/CSS/JS) ── fetch() JSON + session cookie ──▶
+Express routes + middleware (auth, validation, rate limit, Origin check)
+        ▼
+Controllers (HTTP request/response)
+        ▼
+Services (business logic, transactions)
+        ▼
+Repositories (parameterized SQL via pg)
+        ▼
+PostgreSQL
+```
 
-1. Make sure PostgreSQL is running and `.env` contains a valid `DATABASE_URL`
-2. Development (auto-restart on changes): `npm run dev`
-3. Production: `npm start`
-4. Health check: [http://localhost:3000/api/health](http://localhost:3000/api/health)
-   returns `{ "success": true, "status": "ok", "database": "connected", ... }`
-
-## Authentication
-
-Session-based auth (server-side sessions in PostgreSQL, httpOnly cookie). Endpoints:
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/register` | Create account (validates input, bcrypt-hashes the password) and log in |
-| POST | `/api/auth/login` | Log in (regenerates the session to prevent fixation) |
-| POST | `/api/auth/logout` | Log out (destroys the session and clears the cookie) |
-| GET | `/api/auth/me` | Current user profile; requires login (`401` otherwise) |
-
-Demo login (development only, after `npm run db:seed` and `npm run db:demo-password`):
-
-- Email: `demo@microbiz.test`
-- Password: `Demo@12345`
-
-See `docs/security.md` for the full security design (password rules, session
-settings, rate limiting, CSRF, and the data isolation rule).
-
-## API Endpoints
-
-### Auth
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/register` | Create account (validates input, bcrypt-hashes the password) and log in |
-| POST | `/api/auth/login` | Log in (regenerates the session to prevent fixation) |
-| POST | `/api/auth/logout` | Log out (destroys the session and clears the cookie) |
-| GET | `/api/auth/me` | Current user profile; requires login (`401` otherwise) |
-
-### Products & Inventory
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/products` | List products (query: search, category, stock, page, limit, sort) |
-| GET | `/api/products/categories` | List product categories |
-| GET | `/api/products/low-stock` | List low-stock products |
-| GET | `/api/products/:id` | Get a single product |
-| POST | `/api/products` | Create a product |
-| PUT | `/api/products/:id` | Update a product (stock_quantity not allowed) |
-| DELETE | `/api/products/:id` | Soft-delete a product |
-| POST | `/api/products/:id/stock-adjustments` | Adjust product stock |
-| GET | `/api/products/:id/movements` | List movement history for a product |
-| GET | `/api/inventory/movements` | List all inventory movements (query: product_id, type, page, limit) |
-
-See `docs/api-products.md` for full request/response documentation.
-
-### Expenses
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/expenses` | List expenses (query: search, category, date_from, date_to, page, limit, sort) |
-| GET | `/api/expenses/categories` | List distinct expense categories of the current user |
-| GET | `/api/expenses/:id` | Get a single expense |
-| POST | `/api/expenses` | Create an expense |
-| PUT | `/api/expenses/:id` | Update an expense |
-| DELETE | `/api/expenses/:id` | Hard-delete an expense |
-
-See `docs/api-expenses.md` for full request/response documentation.
-
-## Folder structure
+### Folder structure
 
 ```
 microbiz/
 ├── backend/
-│   └── src/
-│       ├── config/       # Environment and database configuration
-│       ├── routes/       # HTTP route definitions
-│       ├── controllers/  # Request/response handling
-│       ├── services/     # Business logic
-│       ├── repositories/ # Database access (raw SQL via pg)
-│       ├── middleware/   # Express middleware (auth, validation, errors)
-│       ├── validators/   # Input validation helpers
-│       └── utils/       # Shared utilities (dates, money, etc.)
-├── tests/               # Backend tests
+│   ├── src/
+│   │   ├── config/       # environment and database configuration
+│   │   ├── routes/       # HTTP route definitions
+│   │   ├── controllers/  # request/response handling
+│   │   ├── services/     # business logic
+│   │   ├── repositories/ # database access (raw SQL via pg)
+│   │   ├── middleware/   # auth, validation, error handling
+│   │   ├── validators/   # input validation helpers
+│   │   └── utils/        # shared helpers
+│   └── tests/            # backend test suites
 ├── frontend/
-│   ├── css/
+│   ├── css/              # variables, base, layout, components
 │   ├── js/
-│   │   ├── api/         # Thin API client wrappers (fetch calls)
-│   │   ├── components/  # Reusable UI components
-│   │   └── pages/       # Page-level logic
+│   │   ├── api/          # thin fetch wrappers
+│   │   ├── components/   # reusable UI helpers
+│   │   └── pages/        # page-level logic
 │   ├── assets/images/
-│   └── pages/           # HTML page files
+│   └── pages/            # HTML pages
 ├── database/
-│   ├── migrations/      # SQL schema migrations
-│   ├── seeds/           # Seed data
-│   └── scripts/         # One-off SQL scripts
-├── docs/                # Design and scope documentation
-└── postman/             # Postman collection exports
+│   ├── migrations/       # SQL schema migrations
+│   ├── seeds/            # development seed data
+│   └── scripts/          # migrate / seed / demo password scripts
+├── docs/                 # scope, architecture, business rules, security, API docs
+├── postman/              # Postman collection export
+└── .env.example
 ```
 
 ## Getting started
 
-### Database setup
+**Prerequisites:** Node.js 20+ and a running PostgreSQL server.
 
-1. Create a PostgreSQL database named `microbiz` (e.g., using pgAdmin or `createdb microbiz`)
-2. Copy `.env.example` to `.env` and update `DATABASE_URL` with your credentials
-3. Run migrations: `npm run db:migrate`
-4. Seed development data: `npm run db:seed`
-5. To reset the database (development only): `npm run db:reset`
+```bash
+git clone <repository-url>
+cd microbiz
+npm install
+```
 
-## Planned phases
+Create the database (for example `createdb microbiz`), then copy the environment template and fill in the two values that matter:
 
-1. Foundation
-2. Database schema
-3. Express server
-4. Authentication
-5. Frontend layout
-6. Products and inventory
-7. Customers
-8. Orders
-9. Expenses
-10. Dashboard and reports
-11. Settings and UX polish
-12. Testing
-13. Deployment and handover
+```bash
+cp .env.example .env
+```
+
+- `DATABASE_URL` — the PostgreSQL connection string, e.g. `postgresql://postgres:your_password@localhost:5432/microbiz`
+- `SESSION_SECRET` — a long random string; generate one with `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`
+
+Prepare the database and start the app:
+
+```bash
+npm run db:migrate        # create/upgrade the schema
+npm run db:seed           # insert development data
+npm run db:demo-password  # set the demo account password (development only)
+npm run dev               # nodemon, serves http://localhost:3000
+```
+
+Open http://localhost:3000 and sign in with the demo account:
+
+- Email: `demo@microbiz.test`
+- Password: `Demo@12345`
+
+> The demo account exists for development only — never create it in production.
+
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm start` | Run the server (`node backend/src/server.js`) |
+| `npm run dev` | Run the server with nodemon (auto-restart on changes) |
+| `npm test` | Placeholder test command |
+| `npm run db:migrate` | Apply the migrations in `database/migrations/` |
+| `npm run db:seed` | Load the development seed data |
+| `npm run db:reset` | Reset the database (development only) |
+| `npm run db:demo-password` | Set the demo account password (development only) |
+| `npm run test:auth` | Auth API tests |
+| `npm run test:products` | Products and inventory API tests |
+| `npm run test:customers` | Customers API tests |
+| `npm run test:orders` | Orders API tests |
+| `npm run test:expenses` | Expenses API tests |
+| `npm run test:reports` | Reports API tests |
+| `npm run test:settings` | Settings API tests |
+
+### Testing
+
+The backend suites run against the configured database and assert both behaviour and per-user data isolation:
+
+```bash
+npm run test:auth
+npm run test:products
+npm run test:customers
+npm run test:orders
+npm run test:expenses
+npm run test:reports
+npm run test:settings
+```
+
+A Postman collection is exported to `postman/microbiz.postman_collection.json`. Import it into Postman, set the collection variable `baseUrl` (for example `http://localhost:3000`), and run **Auth > Login** first — the remaining requests reuse the session cookie it creates.
+
+## Pages and API overview
+
+| Page | Route | API prefix | Reference |
+|------|-------|------------|-----------|
+| Dashboard | `/dashboard` | `/api/reports` | [docs/business-rules.md](docs/business-rules.md) |
+| Products | `/products` | `/api/products` | [docs/api-products.md](docs/api-products.md) |
+| Inventory | `/inventory` | `/api/inventory` | [docs/api-products.md](docs/api-products.md) |
+| Customers | `/customers` | `/api/customers` | [docs/api-customers.md](docs/api-customers.md) |
+| Orders | `/orders` | `/api/orders` | [docs/api-orders.md](docs/api-orders.md) |
+| Expenses | `/expenses` | `/api/expenses` | [docs/api-expenses.md](docs/api-expenses.md) |
+| Reports | `/reports` | `/api/reports` | [docs/business-rules.md](docs/business-rules.md) |
+| Settings | `/settings` | `/api/settings` | [docs/architecture.md](docs/architecture.md) |
+| Auth | `/login`, `/register` | `/api/auth` | [docs/security.md](docs/security.md) |
+
+**Registration body** — `POST /api/auth/register` expects the key `fullName` (not `name`):
+
+```json
+{
+  "fullName": "Ada Lovelace",
+  "email": "ada@example.com",
+  "password": "a-strong-password",
+  "businessName": "Ada's Store"
+}
+```
+
+## Business rules
+
+- **Revenue** counts only `Completed` orders, dated by `completed_at` rather than `order_date`.
+- **Cost of goods** is read from the `order_items` snapshot (`quantity * unit_cost`), so later price edits never rewrite history.
+- **Net profit** = gross profit (revenue − cost of goods) − expenses, with expenses grouped by `expense_date`.
+- **Cash collected** is reported separately from revenue, over its own window and excluding cancelled orders.
+- **Stock** is deducted exactly once, when an order moves from `Pending` to `Confirmed`; cancelling a confirmed order restores the stock and writes the matching movement.
+
+See [docs/business-rules.md](docs/business-rules.md) and [docs/database-schema.md](docs/database-schema.md).
+
+## Security
+
+- Passwords are hashed with `bcryptjs`; plaintext is never stored.
+- Sessions are server-side records in PostgreSQL, delivered through an `httpOnly` cookie.
+- Authentication and other sensitive endpoints are rate limited.
+- State-changing API calls are checked against the request `Origin` (CSRF defence).
+- Every query is scoped to the signed-in user, so one account can never read or write another account's data.
+- Totals, revenue and profit are computed on the server and never trusted from the client.
+- All SQL is parameterized through `pg`.
+
+Details in [docs/security.md](docs/security.md).
+
+## Screenshots
+
+**Dashboard**
+![Dashboard](docs/screenshots/dashboard.png)
+
+**Products**
+![Products](docs/screenshots/products.png)
+
+**Order details**
+![Order details](docs/screenshots/order-view.png)
+
+**Expenses**
+![Expenses](docs/screenshots/expenses.png)
+
+**Reports**
+![Reports](docs/screenshots/reports.png)
+
+**Mobile view**
+<img src="docs/screenshots/mobile.png" width="300" alt="Mobile view">
