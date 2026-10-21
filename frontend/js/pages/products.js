@@ -30,6 +30,10 @@ const state = {
 // DOM elements (cached after init)
 const elements = {};
 
+// Values last written into the Edit Product form, so a background refresh
+// never overwrites a field the user has already edited.
+let editProductFieldValues = {};
+
 /**
  * Cache DOM elements for repeated access.
  */
@@ -509,41 +513,74 @@ function openImageModal(imageUrl, productName) {
 }
 
 /**
+ * Fill the Edit Product form with product data.
+ * @param {object} product - product data
+ * @param {boolean} skipEditedFields - when true, fields the user changed
+ *        since the form was filled are left untouched
+ */
+function fillEditProductForm(product, skipEditedFields = false) {
+  if (!product) return;
+  const values = {
+    "edit-product-id": product.id,
+    "edit-name": product.name || "",
+    "edit-sku": product.sku || "",
+    "edit-category": product.category || "",
+    "edit-selling-price": product.selling_price || "",
+    "edit-cost-price": product.cost_price || "",
+    "edit-low-stock": product.low_stock_threshold || "",
+    "edit-image": product.image_url || "",
+    "edit-description": product.description || "",
+  };
+
+  for (const [id, value] of Object.entries(values)) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    // Never overwrite a field the user is editing.
+    if (skipEditedFields && el.value !== String(editProductFieldValues[id] ?? "")) continue;
+    el.value = value;
+    editProductFieldValues[id] = String(value);
+    if (id === "edit-image") updateImagePreview("edit", value || "");
+  }
+
+  // Hide stock input field, show display text
+  const stockField = document.getElementById("edit-stock-field");
+  const stockDisplay = document.getElementById("edit-stock-display");
+  const stockDisplayText = document.getElementById("edit-stock-display-text");
+  if (stockField) stockField.style.display = "none";
+  if (stockDisplay) stockDisplay.style.display = "block";
+  if (stockDisplayText) stockDisplayText.textContent = `Current stock: ${product.stock_quantity} units. Use the Adjust stock button to change it.`;
+}
+
+/**
  * Open the Edit Product modal with existing data.
  * @param {number} id
  */
 async function openEditModal(id) {
+  const form = document.getElementById("edit-product-form");
+  const loadingEl = document.getElementById("edit-product-loading");
+
+  // The products list already holds the product data, so fill the form and
+  // open the modal without waiting for the API.
+  const listed = state.products.find((p) => Number(p.id) === Number(id));
+  if (listed) {
+    fillEditProductForm(listed);
+    clearFormErrors(form);
+  }
+
+  // The loader is only visible while the refresh request is in flight.
+  if (loadingEl) loadingEl.hidden = false;
+  state.modals.editProduct.show();
+
   try {
-    showToast("info", "Loading product...");
+    // Refresh the product data in the background.
     const data = await api.get(`/api/products/${id}`);
-    const product = data.data;
-
-    // Populate form fields
-    document.getElementById("edit-product-id").value = product.id;
-    document.getElementById("edit-name").value = product.name || "";
-    document.getElementById("edit-sku").value = product.sku || "";
-    document.getElementById("edit-category").value = product.category || "";
-    document.getElementById("edit-selling-price").value = product.selling_price || "";
-    document.getElementById("edit-cost-price").value = product.cost_price || "";
-    document.getElementById("edit-low-stock").value = product.low_stock_threshold || "";
-    document.getElementById("edit-image").value = product.image_url || "";
-    document.getElementById("edit-description").value = product.description || "";
-
-    // Hide stock input field, show display text
-    const stockField = document.getElementById("edit-stock-field");
-    const stockDisplay = document.getElementById("edit-stock-display");
-    const stockDisplayText = document.getElementById("edit-stock-display-text");
-    if (stockField) stockField.style.display = "none";
-    if (stockDisplay) stockDisplay.style.display = "block";
-    if (stockDisplayText) stockDisplayText.textContent = `Current stock: ${product.stock_quantity} units. Use the Adjust stock button to change it.`;
-
-    // Update image preview
-    updateImagePreview("edit", product.image_url || "");
-
-    clearFormErrors(document.getElementById("edit-product-form"));
-    state.modals.editProduct.show();
+    fillEditProductForm(data.data, true);
+    clearFormErrors(form);
   } catch (err) {
     showToast("danger", err.message || "Failed to load product");
+  } finally {
+    // Hide the loader as soon as the request settles (success or error).
+    if (loadingEl) loadingEl.hidden = true;
   }
 }
 

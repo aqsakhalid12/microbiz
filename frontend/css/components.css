@@ -802,6 +802,29 @@
   padding: 1rem 1.5rem;
 }
 
+/* ==== Expense modal flex layout: fixed header/footer, scrollable body ==== */
+/* The header, body and footer live inside the <form>, so the form is the
+   flex column: the body scrolls and the footer buttons stay visible when
+   the modal is taller than the viewport. */
+#add-expense-modal .modal-content form,
+#edit-expense-modal .modal-content form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: calc(100vh - 2rem);
+}
+
+#add-expense-modal .modal-body,
+#edit-expense-modal .modal-body {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+#add-expense-modal .modal-footer,
+#edit-expense-modal .modal-footer {
+  flex-shrink: 0;
+}
+
 #expense-categories { padding-top: 0.5rem; }
 #expense-categories .expense-row { margin-bottom: 1.25rem !important; }
 #expense-categories .expense-row:last-child { margin-bottom: 0 !important; }
@@ -813,3 +836,25 @@
 .expense-row-head { display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 0.9rem; }
 .expense-bar-track { height: 8px; background: #eef0f4; border-radius: 4px; overflow: hidden; }
 .expense-bar { height: 100%; border-radius: 4px; background: var(--primary, #4f46e5); }
+
+/* ==== Page header action buttons (mobile) ==== */
+/* Below 576px the heading and the header action button are stacked with a
+   1rem gap, so the button is never squeezed by the heading and keeps its
+   natural width (its label must not wrap onto a second line). */
+@media (max-width: 575.98px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .page-header > .btn,
+  .d-sm-flex.d-block.justify-content-between.align-items-center.mb-4 > .btn {
+    white-space: nowrap;
+    width: auto;
+    flex: 0 0 auto;
+    /* Cancels the ms-auto offset now that the header is stacked. */
+    margin-left: 0 !important;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.9rem;
+  }
+}
