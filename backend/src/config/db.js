@@ -7,6 +7,7 @@ const { DATABASE_URL, NODE_ENV } = require("./env");
 // SSL is only enabled in production (e.g. hosted databases like Render).
 const pool = new Pool({
   connectionString: DATABASE_URL,
+  max: process.env.VERCEL ? 1 : undefined,
   ...(NODE_ENV === "production" ? { ssl: { rejectUnauthorized: false } } : {}),
 });
 
