@@ -1,4 +1,9 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/api" }],
-  "functions": { "api/index.js": { "includeFiles": "frontend/**" } }
+  "buildCommand": "node scripts/vercel-build.js",
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api" },
+    { "source": "/((?!css/|js/|assets/).*)", "destination": "/api" }
+  ],
+  "functions": { "api/index.js": { "includeFiles": "frontend/pages/**" } }
 }

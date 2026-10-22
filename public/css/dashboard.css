@@ -1,0 +1,249 @@
+/* dashboard.css */
+body {
+  background: #f8f9fb;
+}
+
+.dashboard-page .app-content {
+  padding: 24px;
+}
+
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.dash-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+.dash-sub {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 4px 0 0;
+}
+.dash-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.dash-btn {
+  font-size: 0.875rem;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+  display: inline-block;
+  line-height: 1.4;
+}
+.dash-btn-primary {
+  background: #4f46e5;
+  color: #fff;
+  border: 1px solid #4f46e5;
+}
+.dash-btn-primary:hover {
+  background: #4338ca;
+  color: #fff;
+}
+.dash-btn-secondary {
+  background: #fff;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+.dash-btn-secondary:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+#range-select {
+  width: auto;
+  min-width: 140px;
+  flex: 0 0 auto;
+}
+@media (max-width: 575.98px) {
+  .dash-actions {
+    width: 100%;
+  }
+}
+
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+@media (max-width: 991.98px) {
+  .stat-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 575.98px) {
+  .stat-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-cell {
+  padding: 16px 20px;
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+.stat-cell:nth-child(3n) {
+  border-right: none;
+}
+.stat-cell:nth-last-child(-n + 3) {
+  border-bottom: none;
+}
+@media (max-width: 991.98px) {
+  .stat-cell:nth-child(3n) {
+    border-right: 1px solid #e5e7eb;
+  }
+  .stat-cell:nth-child(2n) {
+    border-right: none;
+  }
+  .stat-cell:nth-last-child(-n + 3) {
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .stat-cell:nth-last-child(-n + 2) {
+    border-bottom: none;
+  }
+}
+@media (max-width: 575.98px) {
+  .stat-cell {
+    border-right: none;
+  }
+  .stat-cell:not(:last-child) {
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .stat-cell:last-child {
+    border-bottom: none;
+  }
+}
+
+.stat-label-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+.stat-label-row i {
+  font-size: 16px;
+  color: #9ca3af;
+}
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #111827;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  margin: 0;
+}
+.stat-caption {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+.stat-value.danger {
+  color: #dc2626;
+}
+.stat-value.warn {
+  color: #d97706;
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.panel-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+.panel-link {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  text-decoration: none;
+}
+.panel-link:hover {
+  color: #4f46e5;
+}
+.panel-body {
+  padding: 20px;
+}
+.panel-empty {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.dash-panels {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+@media (max-width: 991.98px) {
+  .dash-panels {
+    grid-template-columns: 1fr;
+  }
+}
+
+.low-stock-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.low-stock-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.low-stock-list li:last-child {
+  border-bottom: none;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.orders-table th {
+  text-align: left;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.orders-table td {
+  padding: 10px 12px;
+  font-size: 0.875rem;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+}
+.orders-empty {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  padding: 16px 0;
+}
