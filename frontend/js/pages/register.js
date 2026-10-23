@@ -1,6 +1,10 @@
 // frontend/js/pages/register.js
 import { api } from "/js/api/client.js";
-import { clearFormErrors, setButtonLoading, showFormErrors } from "/js/components/ui.js";
+import {
+  clearFormErrors,
+  setButtonLoading,
+  showFormErrors,
+} from "/js/components/ui.js";
 
 const form = document.getElementById("register-form");
 const fullNameInput = document.getElementById("fullName");
@@ -9,32 +13,35 @@ const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const confirmPasswordInput = document.getElementById("confirmPassword");
 const togglePasswordBtn = document.getElementById("toggle-password");
-const toggleConfirmPasswordBtn = document.getElementById("toggle-confirm-password");
+const toggleConfirmPasswordBtn = document.getElementById(
+  "toggle-confirm-password",
+);
 const submitBtn = document.getElementById("submit-btn");
 
 const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,72}$/;
 
 // Toggle password visibility
 togglePasswordBtn.addEventListener("click", () => {
-  const isPassword = passwordInput.type === "password");
+  const isPassword = passwordInput.type === "password";
   passwordInput.type = isPassword ? "text" : "password";
   togglePasswordBtn.querySelector("i").className = isPassword
     ? "bi bi-eye-slash"
     : "bi bi-eye";
   togglePasswordBtn.setAttribute(
     "aria-label",
-    isPassword ? "Hide password" : "Show password"
+    isPassword ? "Hide password" : "Show password",
   );
 });
+
 toggleConfirmPasswordBtn.addEventListener("click", () => {
-  const isPassword = confirmPasswordInput.type === "password");
+  const isPassword = confirmPasswordInput.type === "password";
   confirmPasswordInput.type = isPassword ? "text" : "password";
   toggleConfirmPasswordBtn.querySelector("i").className = isPassword
     ? "bi bi-eye-slash"
     : "bi bi-eye";
   toggleConfirmPasswordBtn.setAttribute(
     "aria-label",
-    isPassword ? "Hide password" : "Show password"
+    isPassword ? "Hide password" : "Show password",
   );
 });
 
