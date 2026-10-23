@@ -3,6 +3,7 @@
 MicroBiz is a small business management web application for home-based businesses and independent sellers. It is an internal tool rather than a public store: a private workspace where the owner runs products, stock, customers, orders, expenses and reporting. There is no public catalogue, cart or checkout for outside visitors — every route and API call requires the signed-in owner. The frontend is plain HTML/CSS/vanilla JavaScript served by the same Express process that exposes the JSON API, so one Node.js process runs the whole product.
 
 **Status:** All 13 planning phases implemented; deployment guide in docs/.
+**Live demo:** https://microbiz-pi.vercel.app (free hosting; first load may take a few seconds). Register a new account to try it. Demo data is only available locally.
 
 ## Features
 
@@ -107,6 +108,7 @@ Open http://localhost:3000 and sign in with the demo account:
 - Password: `Demo@12345`
 
 > The demo account exists for development only — never create it in production.
+> Demo account exists only in local development.
 
 ## Scripts
 
@@ -189,6 +191,21 @@ See [docs/business-rules.md](docs/business-rules.md) and [docs/database-schema.m
 - All SQL is parameterized through `pg`.
 
 Details in [docs/security.md](docs/security.md).
+
+## Deployment
+
+- Hosted on Vercel (serverless Express via api/index.js, static assets copied to public/ by scripts/vercel-build.js)
+- Database on Supabase PostgreSQL (Session pooler connection string)
+- Environment variables NODE_ENV=production, DATABASE_URL, SESSION_SECRET
+- Run npm run db:migrate once against the production database
+- Never run db:reset or db:seed in production
+
+## Known limitations
+
+- Email addresses are not verified and there is no password reset. These would be the next features for a production release.
+- The live demo runs on free hosting (Vercel serverless + Supabase free tier), so the first request after idle time can be slower.
+- Product images are stored as URLs only; there is no file upload.
+- Single user role per business; there are no staff accounts or permissions.
 
 ## Screenshots
 
