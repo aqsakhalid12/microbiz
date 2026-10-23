@@ -106,17 +106,20 @@ function renderSalesChart(rows) {
     el.innerHTML = '<p class="panel-empty">No completed orders in this period.</p>';
     return;
   }
-  const max = Math.max(...revenues, 1);
+  const W = 600, H = 220, max = Math.max(...revenues, 1);
   const n = data.length;
-  const slot = 600 / n;
-  const barW = Math.max(slot * 0.6, 6);
+  const slot = (W - 20) / n;
+  const barW = Math.max(4, slot * 0.6);
+  const step = Math.ceil(n / 7);
   let bars = "";
   let labels = "";
+  let shown = [];
   data.forEach((r, i) => {
     const rev = revenues[i];
-    const h = (rev / max) * 190;
-    const x = i * slot + (slot - barW) / 2;
-    const y = 205 - h;
+    const cx = 10 + slot * i + slot / 2;
+    const x = cx - barW / 2;
+    const height = (rev / max) * (H - 34);
+    const y = H - 24 - height;
     const d = r.period ?? r.date ?? r.label ?? "";
     const dateLabel = (() => {
       const dt = new Date(d);
@@ -124,12 +127,22 @@ function renderSalesChart(rows) {
       return escapeHtml(dt.toLocaleDateString("en-GB", { day: "numeric", month: "short" }));
     })();
     const revFmt = escapeHtml(formatCurrency(rev, currency));
-    bars += `<rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="#4f46e5"><title>${dateLabel}: ${revFmt}</title></rect>`;
-    const showLabel = n <= 6 || i % Math.ceil(n / 6) === 0 || i === n - 1;
-    if (showLabel) {
-      labels += `<text x="${x + barW / 2}" y="218" text-anchor="middle" font-size="10">${dateLabel}</text>`;
+    bars += `<rect x="${x}" y="${y}" width="${barW}" height="${height}" fill="#4f46e5"><title>${dateLabel}: ${revFmt}</title></rect>`;
+    let show = i % step === 0;
+    if (rev > 0) {
+      const collide = shown.some((j) => Math.abs(j - i) < step / 2);
+      if (!collide) show = true;
+    }
+    if (show) {
+      shown.push(i);
+      let anchor = "middle";
+      if (cx < 25) anchor = "start";
+      else if (cx > W - 25) anchor = "end";
+      labels += `<text x="${cx}" y="${H - 8}" text-anchor="${anchor}" font-size="10">${dateLabel}</text>`;
     }
   });
+  bars += `<line x1="10" y1="${H - 24}" x2="${W - 10}" y2="${H - 24}" stroke="#cbd5e1" stroke-width="1"/>`;
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="220" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">${bars}${labels}</svg>`;
   el.innerHTML = `<svg viewBox="0 0 600 220" width="100%" height="220" xmlns="http://www.w3.org/2000/svg">${bars}${labels}</svg>`;
 }
 
