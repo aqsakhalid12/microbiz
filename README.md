@@ -2,6 +2,10 @@
 
 MicroBiz is a small business management web application for home-based businesses and independent sellers. It is an internal tool rather than a public store: a private workspace where the owner runs products, stock, customers, orders, expenses and reporting. There is no public catalogue, cart or checkout for outside visitors — every route and API call requires the signed-in owner. The frontend is plain HTML/CSS/vanilla JavaScript served by the same Express process that exposes the JSON API, so one Node.js process runs the whole product.
 
+## Why MicroBiz
+
+MicroBiz is not an online store. It is a back-office tool for home-based sellers who take orders on WhatsApp or Instagram and need to track stock, customer payments and real profit in one place. It answers three questions: how much stock do I have, who owes me money, and what did I actually earn this month.
+
 **Status:** All 13 planning phases implemented; deployment guide in docs/.
 **Live demo:** https://microbiz-pi.vercel.app (free hosting; first load may take a few seconds). Register a new account to try it. Demo data is only available locally.
 
@@ -199,6 +203,13 @@ Details in [docs/security.md](docs/security.md).
 - Environment variables NODE_ENV=production, DATABASE_URL, SESSION_SECRET
 - Run npm run db:migrate once against the production database
 - Never run db:reset or db:seed in production
+
+## Design decisions
+
+- Customers do not log in; they are records owned by the business owner.
+- Online payments and a public storefront are intentionally out of scope for v1.
+- Revenue counts only Completed orders; cash collected is shown separately so unpaid orders are never mistaken for income.
+- Stock is deducted once, when an order is confirmed, and restored on cancellation, inside database transactions.
 
 ## Known limitations
 
